@@ -1,0 +1,28 @@
+{{ define "movie-list" }}
+<table id="movie_table" class="table is-striped is-narrow is-hoverable is-fullwidth">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Year</th>
+            <th>Director</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range $id, $movie := . }}
+        <tr id="movie_row_{{ $id }}">
+            <td>{{ $id }}</td>
+            <td>{{ $movie.Title }}</td>
+            <td>{{ $movie.Year }}</td>
+            <td>{{ $movie.Director }}</td>
+            <td>
+                <button class="delete is-small" type="button" hx-delete="/movie/{{ $id }}" hx-target="#movie_row_{{ $id }}"
+                    hx-swap="outerHTML">
+                </button>
+            </td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
+{{ end }}

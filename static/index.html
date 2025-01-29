@@ -1,0 +1,28 @@
+<html data-theme="dark">
+
+<head>
+    <title>HTMX GO PRIMEAGEN</title>
+    <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+</head>
+
+<body>
+    <nav class="navbar is-info" role="navigation" aria-label="main navigation">
+        <div style="display: flex; flex-direction: row;">
+            <div class="navbar-item">
+                <button hx-get="/movies" hx-target="#main-view"><span>Movie List</span></button>
+            </div>
+            <div class="navbar-item">
+                <button hx-get="/search_movie" hx-target="#main-view">Search Movie</button>
+            </div>
+            <div class="navbar-item">
+                <button hx-get="/add_movie" hx-target="#main-view">Add Movie</button>
+            </div>
+        </div>
+    </nav>
+    <div id="main-view" class="box">
+        <span>click a button</span>
+    </div>
+</body>
+
+</html>
