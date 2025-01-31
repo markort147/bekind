@@ -11,44 +11,61 @@ import (
 
 func GetAllMovieHandler(c echo.Context) error {
 
-	sortedBy := c.QueryParam("sorted-by")
-	if len(sortedBy) == 0 {
-		sortedBy = "id"
+	var sortedBy movies.MovieField
+
+	sortedBy, err := movies.ParseMovieField(c.QueryParam("sorted-by"))
+	if err != nil {
+		sortedBy = movies.MovieId
 	}
 
-	desc := c.QueryParam("desc") == "true"
+	sorting := movies.SortInfo{
+		SortedBy: sortedBy,
+		Desc:     c.QueryParam("desc") == "true",
+	}
 
-	// log.Logger.Debugf("movies.FindAll(): %+v\n", ms)
-	ms := movies.FindAllSorted(sortedBy, desc)
+	sortedByLabel, err := movies.GetMovieFieldLabel(sorting.SortedBy)
+	if err != nil {
+		return err
+	}
 
 	return c.Render(200, "movie-list", struct {
 		SortedBy string
 		Desc     bool
 		Body     []movies.Movie
 	}{
-		SortedBy: sortedBy,
-		Desc:     desc,
-		Body:     ms,
+		SortedBy: sortedByLabel,
+		Desc:     sorting.Desc,
+		Body:     movies.FindAll(&sorting),
 	})
 }
 
 func SortMovieHandler(c echo.Context) error {
 
-	sortedBy := c.QueryParam("by")
+	sortedBy, err := movies.ParseMovieField(c.QueryParam("by"))
+	if err != nil {
+		return err
+	}
 
-	desc := movies.SortedBy != sortedBy || (movies.SortedBy == sortedBy && !movies.Desc)
+	currSorting := movies.CurrentSorting
 
-	// log.Logger.Debugf("movies.FindAll(): %+v\n", ms)
-	ms := movies.FindAllSorted(sortedBy, desc)
+	newSorting := movies.SortInfo{
+		SortedBy: sortedBy,
+		Desc:     currSorting.SortedBy == sortedBy && !currSorting.Desc,
+	}
+
+	movieFieldLabel, err := movies.GetMovieFieldLabel(newSorting.SortedBy)
+	if err != nil {
+		return err
+	}
 
 	return c.Render(200, "movie-list", struct {
 		SortedBy string
 		Desc     bool
 		Body     []movies.Movie
 	}{
-		SortedBy: sortedBy,
-		Desc:     desc,
-		Body:     ms,
+		SortedBy: movieFieldLabel,
+		Desc:     newSorting.Desc,
+		Body:     movies.FindAll(&newSorting),
 	})
 }
 
@@ -92,7 +109,7 @@ func GetMovieHandler(c echo.Context) error {
 	}{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     movies.FindByIds(ids...),
+		Body:     movies.FindByIds(ids, nil),
 	})
 }
 
@@ -110,7 +127,7 @@ func PostMovieHandler(c echo.Context) error {
 	}{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     movies.FindAllSorted("id", false),
+		Body:     movies.FindAll(nil),
 	})
 }
 
@@ -143,6 +160,6 @@ func PutMovieHandler(c echo.Context) error {
 	}{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     movies.FindAllSorted("id", false),
+		Body:     movies.FindAll(nil),
 	})
 }

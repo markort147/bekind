@@ -2,14 +2,15 @@
 <table id="movie_table" class="table is-striped is-narrow is-hoverable is-fullwidth">
     <thead>
         <tr>
-            <th style="cursor: pointer" hx-get="/views/movies/sort?by=id" hx-target="#movie_table">id {{ if eq .SortedBy
-                "id" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+            <th style="cursor: pointer" hx-get="/views/movies/sort?by=id" hx-target="#movie_table">id
+                {{ if eq .SortedBy "Id" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}
+            </th>
             <th style="cursor: pointer" hx-get="/views/movies/sort?by=title" hx-target="#movie_table">Title {{ if eq
-                .SortedBy "title" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+                .SortedBy "Title" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
             <th style="cursor: pointer" hx-get="/views/movies/sort?by=year" hx-target="#movie_table">Year {{ if eq
-                .SortedBy "year" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+                .SortedBy "Year" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
             <th style="cursor: pointer" hx-get="/views/movies/sort?by=director" hx-target="#movie_table">Director {{ if
-                eq .SortedBy "director" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+                eq .SortedBy "Director" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
             <th></th>
             <th></th>
         </tr>

@@ -1,5 +1,7 @@
 package movies
 
+import "github.com/bekind/bekindfrontend/log"
+
 type Movies struct {
 	nextId    int
 	Movies    []*Movie
@@ -11,6 +13,7 @@ func (ms *Movies) AddMovie(m Movie) Movie {
 	ms.Movies = append(ms.Movies, &m)
 	ms.MoviesMap[ms.nextId] = &m
 	ms.nextId++
+	log.Logger.Infof("added movie %v", m)
 	return m
 }
 
@@ -21,8 +24,6 @@ func (ms *Movies) HasId(id int) bool {
 
 func EmptyMovies() Movies {
 	ms := Movies{}
-	SortedBy = "id"
-	Desc = false
 	ms.Movies = make([]*Movie, 0)
 	ms.MoviesMap = make(map[int]*Movie, 0)
 	return ms

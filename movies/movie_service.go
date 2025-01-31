@@ -2,71 +2,49 @@ package movies
 
 import (
 	"errors"
-	"fmt"
-	"slices"
+	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/bekind/bekindfrontend/log"
 )
 
+var movies Movies
 
-var SortedBy = "id"
-var Desc = false
-var movies = EmptyMovies()
-
-func getMovieSortingFunc(sortedBy string) func(m1, m2 Movie) int {
-	if sortedBy == "id" {
-		return func(m1, m2 Movie) int {
-			return m1.Id - m2.Id
-		}
-	}
-	if sortedBy == "title" {
-		return func(m1, m2 Movie) int {
-			return strings.Compare(m1.Title, m2.Title)
-		}
-	}
-	if sortedBy == "director" {
-		return func(m1, m2 Movie) int {
-			return strings.Compare(m1.Director, m2.Director)
-		}
-	}
-	if sortedBy == "year" {
-		return func(m1, m2 Movie) int {
-			return strings.Compare(m1.Year, m2.Year)
-		}
-	}
-	panic(fmt.Errorf("value of sortedBy=%s not recognized", sortedBy))
+func Init() {
+	movies = EmptyMovies()
 }
 
-func InitWithRandoms(n int) {
+func FillWithRandoms(n int) {
 	AddRandomMovies(&movies, n)
 	log.Logger.Debugf("Initialized with %d movies: %+v\n", n, movies)
 }
 
-func FindAll() []Movie {
-	return FindAllSorted("id", false)
-}
-
-func FindAllSorted(sortedBy string, desc bool) []Movie {
-	sort(sortedBy, desc)
-	res := make([]Movie, 0)
-	for _, m := range movies.Movies {
-		res = append(res, *m)
+func FillForTests() {
+	mock := []Movie{
+		{Id: 3, Title: "Interstellar", Year: "2014", Director: "Christopher Nolan"},
+		{Id: 1, Title: "The Godfather", Year: "1972", Director: "Francis Ford Coppola"},
+		{Id: 2, Title: "Pulp Fiction", Year: "1994", Director: "Quentin Tarantino"},
+		{Id: 4, Title: "Fight Club", Year: "1999", Director: "David Fincher"},
 	}
-	return res
+	for _, m := range mock {
+		movies.AddMovie(m)
+	}
 }
 
-func sort(sortedBy string, desc bool) {
-	slices.SortFunc(movies.Movies, func(m1, m2 *Movie) int {
-		out := getMovieSortingFunc(sortedBy)(*m1, *m2)
-		if desc {
-			return -out
-		}
-		return out
-	})
-	SortedBy = sortedBy
-	Desc = desc
+func FindAll(sortInfo *SortInfo) []Movie {
+	if sortInfo == nil {
+		sortInfo = &defaultSorting
+	}
+
+	sortedMovies := make([]Movie, len(movies.Movies))
+	for i, m := range movies.Movies {
+		sortedMovies[i] = *m
+	}
+
+	sort.Sort(MovieSorter{SortInfo: *sortInfo, Movies: sortedMovies})
+	CurrentSorting = *sortInfo
+	log.Logger.Debugf("FindAll. Sorted according to %v: %v", *sortInfo, sortedMovies)
+	return sortedMovies
 }
 
 func FindById(id int) (Movie, error) {
@@ -77,24 +55,28 @@ func FindById(id int) (Movie, error) {
 	return *movie, nil
 }
 
-func FindByIds(ids ...int) []Movie {
-	return FindByIdsSorted("id", false, ids...)
-}
-
-func FindByIdsSorted(sortedBy string, desc bool, ids ...int) []Movie {
-	sort(sortedBy, desc)
-	res := make([]Movie, 0)
+func FindByIds(ids []int, sortInfo *SortInfo) []Movie {
+	filteredMovies := make([]Movie, 0, len(ids))
 	seen := make(map[int]bool)
+
 	for _, id := range ids {
 		if _, alreadyAdded := seen[id]; alreadyAdded {
 			continue
 		}
 		if movie, exists := movies.MoviesMap[id]; exists {
-			res = append(res, *movie)
+			filteredMovies = append(filteredMovies, *movie)
 		}
 		seen[id] = true
 	}
-	return res
+
+	if sortInfo == nil {
+		sortInfo = &defaultSorting
+	}
+
+	sort.Sort(MovieSorter{SortInfo: *sortInfo, Movies: filteredMovies})
+	CurrentSorting = *sortInfo
+	log.Logger.Debugf("FindByIds. Sorted according to %v: %v", *sortInfo, filteredMovies)
+	return filteredMovies
 }
 
 func Save(m Movie) Movie {

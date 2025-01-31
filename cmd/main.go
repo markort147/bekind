@@ -10,7 +10,8 @@ import (
 
 func main() {
 	log.Init()
-	movies.InitWithRandoms(500)
+	movies.Init()
+	movies.FillForTests()
 	e := initEcho()
 	e.Logger.Fatal(e.Start(":8080"))
 }
