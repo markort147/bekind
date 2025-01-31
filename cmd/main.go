@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	log.Init()	
+	log.Init()
 	movies.InitWithRandoms(500)
 	e := initEcho()
 	e.Logger.Fatal(e.Start(":8080"))
@@ -29,12 +29,15 @@ func registerEndpoints(e *echo.Echo) {
 	e.File("/", "static/index.html")
 
 	// side panels views
-	e.GET("/movies", GetAllMovieHandler)
-	e.GET("/search_movie", SimpleViewHandler("search_movie"))
-	e.GET("/add_movie", SimpleViewHandler("add_movie"))
+	e.GET("/views/movies", GetAllMovieHandler)
+	e.GET("/views/search_movie", SimpleViewHandler("search_movie"))
+	e.GET("/views/add_movie", SimpleViewHandler("add_movie"))
+	e.GET("/views/edit-movie/:id", EditMovieHandler)
+	e.GET("/views/movies/sort", SortMovieHandler)
 
 	// movie handlers
 	e.DELETE("/movie/:id", DeleteMovieHandler)
 	e.GET("/movie", GetMovieHandler)
 	e.POST("/movie", PostMovieHandler)
+	e.PUT("/movie/:id", PutMovieHandler)
 }

@@ -1,19 +1,19 @@
 {{ define "add_movie" }}
 <div id="add_movie_form_container">
-    <form hx-post="/movie" hx-swap="none" style="display: flex; flex-direction: column;">
+    <form hx-post="/movie" hx-target="#main-view" style="display: flex; flex-direction: column;">
         <div class="field">
-            <label for="title" class="label">Title:</label>
+            <label for="add_movie_title" class="label">Title:</label>
             <input class="input" type="text" name="title" id="add_movie_title"></input>
         </div>
         <div class="field">
-            <label for="year" class="label">Year:</label>
+            <label for="add_movie_year" class="label">Year:</label>
             <input class="input" type="text" name="year" id="add_movie_year"></input>
         </div>
         <div class="field">
-            <label for="director" class="label">Director:</label>
+            <label for="add_movie_director" class="label">Director:</label>
             <input class="input" type="text" name="director" id="add_movie_director"></input>
         </div>
-        <button type="submit" class="button is-primary is-light is-small">ADD</button>
+        <button type="submit" class="button is-primary is-light is-small">Confirm</button>
     </form>
 </div>
 {{ end }}

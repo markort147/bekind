@@ -1,6 +1,7 @@
 package movies
 
 type Movie struct {
+	Id       int
 	Title    string
 	Year     string
 	Director string
@@ -8,6 +9,7 @@ type Movie struct {
 
 func NewMovie(title, year, director string) Movie {
 	return Movie{
+		Id:       -1,
 		Title:    title,
 		Year:     year,
 		Director: director,

@@ -2,23 +2,35 @@
 <table id="movie_table" class="table is-striped is-narrow is-hoverable is-fullwidth">
     <thead>
         <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Year</th>
-            <th>Director</th>
+            <th style="cursor: pointer" hx-get="/views/movies/sort?by=id" hx-target="#movie_table">id {{ if eq .SortedBy
+                "id" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+            <th style="cursor: pointer" hx-get="/views/movies/sort?by=title" hx-target="#movie_table">Title {{ if eq
+                .SortedBy "title" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+            <th style="cursor: pointer" hx-get="/views/movies/sort?by=year" hx-target="#movie_table">Year {{ if eq
+                .SortedBy "year" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+            <th style="cursor: pointer" hx-get="/views/movies/sort?by=director" hx-target="#movie_table">Director {{ if
+                eq .SortedBy "director" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+            <th></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        {{ range $id, $movie := . }}
-        <tr id="movie_row_{{ $id }}">
-            <td>{{ $id }}</td>
-            <td>{{ $movie.Title }}</td>
-            <td>{{ $movie.Year }}</td>
-            <td>{{ $movie.Director }}</td>
+        {{ range .Body }}
+        <tr id="movie_row_{{ .Id }}">
+            <td>{{ .Id }}</td>
+            <td>{{ .Title }}</td>
+            <td>{{ .Year }}</td>
+            <td>{{ .Director }}</td>
             <td>
-                <button class="delete is-small" type="button" hx-delete="/movie/{{ $id }}" hx-target="#movie_row_{{ $id }}"
-                    hx-swap="outerHTML">
+                <button class="button is-info is-dark" type="button" hx-get="/views/edit-movie/{{ .Id }}"
+                    hx-target="#main-view">
+                    Edit
+                </button>
+            </td>
+            <td>
+                <button class="button is-warning is-dark" type="button" hx-delete="/movie/{{ .Id }}"
+                    hx-target="#movie_row_{{ .Id }}">
+                    Delete
                 </button>
             </td>
         </tr>
