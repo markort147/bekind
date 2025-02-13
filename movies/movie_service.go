@@ -14,11 +14,6 @@ func Init() {
 	movies = EmptyMovies()
 }
 
-func FillWithRandoms(n int) {
-	AddRandomMovies(&movies, n)
-	log.Logger.Debugf("Initialized with %d movies: %+v\n", n, movies)
-}
-
 func FillForTests() {
 	mock := []Movie{
 		{Id: 3, Title: "Interstellar", Year: "2014", Director: "Christopher Nolan"},
