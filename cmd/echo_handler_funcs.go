@@ -9,6 +9,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type MovieList struct {
+	SortedBy string
+	Desc     bool
+	Body     []movies.Movie
+}
+
 func GetAllMovieHandler(c echo.Context) error {
 
 	var sortedBy movies.MovieField
@@ -28,11 +34,7 @@ func GetAllMovieHandler(c echo.Context) error {
 		return err
 	}
 
-	return c.Render(200, "movie-list", struct {
-		SortedBy string
-		Desc     bool
-		Body     []movies.Movie
-	}{
+	return c.Render(200, "movie-list", MovieList{
 		SortedBy: sortedByLabel,
 		Desc:     sorting.Desc,
 		Body:     movies.FindAll(&sorting),
@@ -58,11 +60,7 @@ func SortMovieHandler(c echo.Context) error {
 		return err
 	}
 
-	return c.Render(200, "movie-list", struct {
-		SortedBy string
-		Desc     bool
-		Body     []movies.Movie
-	}{
+	return c.Render(200, "movie-list", MovieList{
 		SortedBy: movieFieldLabel,
 		Desc:     newSorting.Desc,
 		Body:     movies.FindAll(&newSorting),
@@ -102,11 +100,7 @@ func GetMovieHandler(c echo.Context) error {
 		ids = append(ids, id)
 	}
 
-	return c.Render(200, "movie-list", struct {
-		SortedBy string
-		Desc     bool
-		Body     []movies.Movie
-	}{
+	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
 		Body:     movies.FindByIds(ids, nil),
@@ -120,11 +114,7 @@ func PostMovieHandler(c echo.Context) error {
 		c.FormValue("director"),
 	))
 
-	return c.Render(200, "movie-list", struct {
-		SortedBy string
-		Desc     bool
-		Body     []movies.Movie
-	}{
+	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
 		Body:     movies.FindAll(nil),
@@ -153,11 +143,7 @@ func PutMovieHandler(c echo.Context) error {
 		c.FormValue("year"),
 		c.FormValue("director"),
 	))
-	return c.Render(200, "movie-list", struct {
-		SortedBy string
-		Desc     bool
-		Body     []movies.Movie
-	}{
+	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
 		Body:     movies.FindAll(nil),
