@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+/*
+=== Movie ===
+This file contains the definition of the Movie type and related functions.
+================
+*/
+
 type MovieField int
 
 const (
@@ -14,6 +20,7 @@ const (
 	MovieDirector
 )
 
+// GetMovieFieldLabel returns the label for a MovieField value.
 func GetMovieFieldLabel(field MovieField) (string, error) {
 	switch field {
 	case MovieId:
@@ -28,6 +35,15 @@ func GetMovieFieldLabel(field MovieField) (string, error) {
 	return "", fmt.Errorf("invalid MovieField value: %d", field)
 }
 
+// Movie represents a movie entity.
+type Movie struct {
+	Id       int
+	Title    string
+	Year     string
+	Director string
+}
+
+// ParseMovieField returns the MovieField value for a label.
 func ParseMovieField(label string) (MovieField, error) {
 	switch strings.ToLower(label) {
 	case "id":
@@ -42,13 +58,7 @@ func ParseMovieField(label string) (MovieField, error) {
 	return -1, fmt.Errorf("invalid MovieField value: %s", label)
 }
 
-type Movie struct {
-	Id       int
-	Title    string
-	Year     string
-	Director string
-}
-
+// NewMovie creates a new Movie instance.
 func NewMovie(title, year, director string) Movie {
 	return Movie{
 		Id:       -1,
@@ -58,6 +68,7 @@ func NewMovie(title, year, director string) Movie {
 	}
 }
 
+// EmptyMovie returns an empty Movie instance.
 func EmptyMovie() Movie {
 	return Movie{}
 }

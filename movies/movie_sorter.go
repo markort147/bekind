@@ -5,14 +5,18 @@ import (
 	"strings"
 )
 
+/*
+=== Movie Sorter ===
+This file contains the sorting logic for the movies.
+The sorting is done based on the field specified in the SortInfo struct.
+======================
+*/
+
+// SortInfo represents the sorting information.
+// It contains the field to sort by and the sorting order.
 type SortInfo struct {
 	SortedBy MovieField
 	Desc     bool
-}
-
-var CurrentSorting = SortInfo{
-	SortedBy: MovieId,
-	Desc:     false,
 }
 
 var defaultSorting = SortInfo{
@@ -20,6 +24,15 @@ var defaultSorting = SortInfo{
 	Desc:     false,
 }
 
+// CurrentSorting is the current sorting information.
+// It is updated every time a new sorting is requested.
+var CurrentSorting = SortInfo{
+	SortedBy: MovieId,
+	Desc:     false,
+}
+
+// MovieSorter is a struct that contains the sorting information and the movies to sort.
+// It implements the sort.Interface interface.
 type MovieSorter struct {
 	SortInfo
 	Movies []Movie

@@ -10,12 +10,16 @@ import (
 
 func main() {
 	log.Init()
+
 	movies.Init()
 	movies.FillForTests()
+
 	e := initEcho()
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
+// initEcho initializes the echo server
+// and registers all the endpoints
 func initEcho() *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.Logger())
