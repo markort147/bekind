@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/bekind/bekindfrontend/config"
+	cfg "github.com/bekind/bekindfrontend/config"
 	"github.com/labstack/gommon/log"
 )
 
@@ -18,8 +18,8 @@ The global logger is used to log messages that are not specific to a particular 
 var Logger = log.New("global")
 
 func Init() {
-	Logger.SetLevel(parseLevel(config.GetConfig().Log.Level))
-	Logger.SetOutput(parseOutput(config.GetConfig().Log.Output))
+	Logger.SetLevel(parseLevel(cfg.GetConfig().Log.Level))
+	Logger.SetOutput(parseOutput(cfg.GetConfig().Log.Output))
 }
 
 func Test() {
