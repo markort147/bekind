@@ -1,9 +1,7 @@
 package movies
 
 import (
-	"errors"
 	"sort"
-	"strconv"
 
 	"github.com/bekind/bekindfrontend/log"
 )
@@ -15,6 +13,16 @@ It is responsible for exposing the CRUD operations on movies.
 It is the only layer that has access to the data storage.
 ======================
 */
+
+type MovieServiceErr string
+
+const (
+	MovieNotFoundErr = MovieServiceErr("Movie not found")
+)
+
+func (e MovieServiceErr) Error() string {
+	return string(e)
+}
 
 // movies is the in-memory storage of movies
 var movies Movies
@@ -58,7 +66,7 @@ func FindAll(sortInfo *SortInfo) []Movie {
 func FindById(id int) (Movie, error) {
 	movie, exists := movies.MoviesMap[id]
 	if !exists {
-		return Movie{}, errors.New("Requested id=" + strconv.Itoa(id) + " does not exist")
+		return Movie{}, MovieNotFoundErr
 	}
 	return *movie, nil
 }

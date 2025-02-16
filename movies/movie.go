@@ -1,7 +1,7 @@
 package movies
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 )
 
@@ -20,6 +20,8 @@ const (
 	MovieDirector
 )
 
+var ErrInvalidMovieField = errors.New("invalid MovieField value")
+
 // GetMovieFieldLabel returns the label for a MovieField value.
 func GetMovieFieldLabel(field MovieField) (string, error) {
 	switch field {
@@ -32,7 +34,7 @@ func GetMovieFieldLabel(field MovieField) (string, error) {
 	case MovieDirector:
 		return "Director", nil
 	}
-	return "", fmt.Errorf("invalid MovieField value: %d", field)
+	return "", ErrInvalidMovieField
 }
 
 // Movie represents a movie entity.
@@ -55,7 +57,7 @@ func ParseMovieField(label string) (MovieField, error) {
 	case "director":
 		return MovieDirector, nil
 	}
-	return -1, fmt.Errorf("invalid MovieField value: %s", label)
+	return -1, ErrInvalidMovieField
 }
 
 // NewMovie creates a new Movie instance.

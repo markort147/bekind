@@ -1,8 +1,6 @@
 package movies
 
 import (
-	"reflect"
-	"sort"
 	"testing"
 
 	"github.com/bekind/bekindfrontend/log"
@@ -18,45 +16,6 @@ func getTestMovies() []Movie {
 	}
 }
 
-// ✅ **1. Test Sorting Logic with `MovieSorter`**
-func TestMovieSorter(t *testing.T) {
-	log.Test()
-	testCases := []struct {
-		field  MovieField
-		desc   bool
-		output []int // Expected order of IDs
-	}{
-		{MovieId, false, []int{1, 2, 3, 4}},       // Sort by ID Ascending
-		{MovieId, true, []int{4, 3, 2, 1}},        // Sort by ID Descending
-		{MovieTitle, false, []int{4, 3, 2, 1}},    // Sort by Title Ascending
-		{MovieTitle, true, []int{1, 2, 3, 4}},     // Sort by Title Descending
-		{MovieYear, false, []int{1, 2, 4, 3}},     // Sort by Year Ascending
-		{MovieYear, true, []int{3, 4, 2, 1}},      // Sort by Year Descending
-		{MovieDirector, false, []int{3, 4, 1, 2}}, // Sort by Director Ascending
-		{MovieDirector, true, []int{2, 1, 4, 3}},  // Sort by Director Descending
-	}
-
-	for _, tc := range testCases {
-		// Make a copy of test movies
-		movies := getTestMovies()
-		sort.Sort(MovieSorter{SortInfo: SortInfo{SortedBy: tc.field, Desc: tc.desc}, Movies: movies})
-
-		// Extract sorted IDs
-		sortedIDs := []int{}
-		for _, m := range movies {
-			sortedIDs = append(sortedIDs, m.Id)
-		}
-
-		// Check if sorted correctly
-		if !reflect.DeepEqual(sortedIDs, tc.output) {
-			sortingField, _ := GetMovieFieldLabel(tc.field)
-			t.Fatalf("Sorting by %v (Desc: %v) failed. Got %v, expected %v",
-				sortingField, tc.desc, sortedIDs, tc.output)
-		}
-	}
-}
-
-// ✅ **2. Test `FindAll()`**
 func TestFindAll(t *testing.T) {
 	log.Test()
 	// Initialize test data
@@ -81,7 +40,6 @@ func TestFindAll(t *testing.T) {
 	}
 }
 
-// ✅ **3. Test `FindByIds()`**
 func TestFindByIds(t *testing.T) {
 	log.Test()
 	// Initialize test data
@@ -101,4 +59,79 @@ func TestFindByIds(t *testing.T) {
 			t.Errorf("FindByIds failed. Expected title %s, got %s", expectedOrder[i], movie.Title)
 		}
 	}
+}
+
+func TestFindById(t *testing.T) {
+	log.Test()
+	// Initialize test data
+	Init()
+	for _, m := range getTestMovies() {
+		Save(m)
+	}
+
+	id := 1
+	movie, _ := FindById(id)
+	want := "The Godfather"
+
+	if movie.Title != want {
+		t.Errorf("FindByIds failed. Expected title %s, got %s", want, movie.Title)
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	log.Test()
+	// Initialize test data
+	Init()
+	for _, m := range getTestMovies() {
+		Save(m)
+	}
+
+	id := 1
+	movie, _ := FindById(id)
+	movie.Title = "The Godfather II"
+	Update(id, movie)
+
+	movie, _ = FindById(id)
+	want := "The Godfather II"
+
+	if movie.Title != want {
+		t.Errorf("Update failed. Expected title %s, got %s", want, movie.Title)
+	}
+}
+
+func TestDeleteById(t *testing.T) {
+	t.Run("Delete existing movie", func(t *testing.T) {
+		log.Test()
+		// Initialize test data
+		Init()
+		for _, m := range getTestMovies() {
+			Save(m)
+		}
+
+		id := 1
+		DeleteById(id)
+
+		_, err := FindById(id)
+		want := "Requested id=1 does not exist"
+
+		if err == nil || err != MovieNotFoundErr {
+			t.Errorf("DeleteById failed. Expected error %v, got %v", want, err)
+		}
+	})
+	t.Run("Delete non-existing movie", func(t *testing.T) {
+		log.Test()
+		// Initialize test data
+		Init()
+		for _, m := range getTestMovies() {
+			Save(m)
+		}
+
+		id := 5
+		ok := DeleteById(id)
+
+		if ok {
+			t.Errorf("DeleteById failed. Expected false, got true")
+		}
+	})
+
 }

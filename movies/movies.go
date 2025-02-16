@@ -31,9 +31,9 @@ func (ms *Movies) AddMovie(m Movie) Movie {
 	return m
 }
 
-// HasId checks if a movie with the given id exists in the Movies struct.
+// ExistsById checks if a movie with the given id exists in the Movies struct.
 // It returns true if the movie exists, false otherwise.
-func (ms *Movies) HasId(id int) bool {
+func (ms *Movies) ExistsById(id int) bool {
 	_, exists := ms.MoviesMap[id]
 	return exists
 }
