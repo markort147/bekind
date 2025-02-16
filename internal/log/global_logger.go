@@ -15,11 +15,20 @@ The global logger is used to log messages that are not specific to a particular 
 ==================================
 */
 
-var Logger = log.New("global")
+var (
+	Logger  = log.New("global")
+	logFile *os.File
+)
 
 func Init() {
 	Logger.SetLevel(parseLevel(cfg.GetConfig().Log.Level))
 	Logger.SetOutput(parseOutput(cfg.GetConfig().Log.Output))
+}
+
+func Close() {
+	if logFile != nil {
+		logFile.Close()
+	}
 }
 
 func Test() {
@@ -51,6 +60,11 @@ func parseOutput(output string) io.Writer {
 	case "stderr":
 		return os.Stderr
 	default:
-		panic("invalid log output")
+		file, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err != nil {
+			panic("failed to open log file: " + err.Error())
+		}
+		logFile = file
+		return file
 	}
 }

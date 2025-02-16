@@ -1,7 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
 
 	hdls "github.com/bekind/bekindfrontend/handlers"
 	cfg "github.com/bekind/bekindfrontend/internal/config"
@@ -16,12 +23,43 @@ func main() {
 	cfg.FromFile("config.yml")
 
 	log.Init()
+	defer log.Close()
 
 	ms.Init()
 	ms.FillForTests()
 
 	e := initEcho()
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", cfg.GetConfig().Server.Port)))
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		<-quit
+		log.Logger.Info("Shutting down the server")
+
+		// Create a context with a timeout to allow for graceful shutdown
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		// Attempt to gracefully shut down the server
+		if err := e.Shutdown(ctx); err != nil {
+			log.Logger.Error("Server forced to shutdown: ", err)
+		}
+
+		log.Logger.Info("Server exiting")
+	}()
+
+	// Start the server in a separate goroutine
+	go func() {
+		if err := e.Start(fmt.Sprintf(":%d", cfg.GetConfig().Server.Port)); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("Error starting the server: ", err)
+		}
+	}()
+
+	wg.Wait()
+	log.Logger.Info("Server exited")
 }
 
 // initEcho initializes the echo server
