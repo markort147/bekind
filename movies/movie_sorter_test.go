@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/bekind/bekindfrontend/log"
+	"github.com/bekind/bekindfrontend/internal/log"
 )
 
 func TestMovieSorter(t *testing.T) {

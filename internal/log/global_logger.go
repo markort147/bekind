@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	cfg "github.com/bekind/bekindfrontend/config"
+	cfg "github.com/bekind/bekindfrontend/internal/config"
 	"github.com/labstack/gommon/log"
 )
 

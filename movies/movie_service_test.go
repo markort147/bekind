@@ -3,7 +3,7 @@ package movies
 import (
 	"testing"
 
-	"github.com/bekind/bekindfrontend/log"
+	"github.com/bekind/bekindfrontend/internal/log"
 )
 
 // Helper function to generate test movies

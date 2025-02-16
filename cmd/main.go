@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	cfg "github.com/bekind/bekindfrontend/config"
 	hdls "github.com/bekind/bekindfrontend/handlers"
-	"github.com/bekind/bekindfrontend/log"
+	cfg "github.com/bekind/bekindfrontend/internal/config"
+	"github.com/bekind/bekindfrontend/internal/log"
 	ms "github.com/bekind/bekindfrontend/movies"
 
 	"github.com/labstack/echo/v4"

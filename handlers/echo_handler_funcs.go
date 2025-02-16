@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bekind/bekindfrontend/log"
+	"github.com/bekind/bekindfrontend/internal/log"
 	"github.com/bekind/bekindfrontend/movies"
 	"github.com/labstack/echo/v4"
 )

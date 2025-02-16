@@ -3,7 +3,7 @@ package movies
 import (
 	"sort"
 
-	"github.com/bekind/bekindfrontend/log"
+	"github.com/bekind/bekindfrontend/internal/log"
 )
 
 /*
