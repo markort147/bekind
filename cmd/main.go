@@ -3,31 +3,32 @@ package main
 import (
 	"fmt"
 
-	"github.com/bekind/bekindfrontend/config"
+	cfg "github.com/bekind/bekindfrontend/config"
+	hdls "github.com/bekind/bekindfrontend/handlers"
 	"github.com/bekind/bekindfrontend/log"
-	"github.com/bekind/bekindfrontend/movies"
+	ms "github.com/bekind/bekindfrontend/movies"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	mdw "github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	config.FromFile("config.yml")
+	cfg.FromFile("config.yml")
 
 	log.Init()
 
-	movies.Init()
-	movies.FillForTests()
+	ms.Init()
+	ms.FillForTests()
 
 	e := initEcho()
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", config.GetConfig().Server.Port)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", cfg.GetConfig().Server.Port)))
 }
 
 // initEcho initializes the echo server
 // and registers all the endpoints
 func initEcho() *echo.Echo {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	e.Use(mdw.Logger())
 	e.Debug = true
 	e.Renderer = newTemplate("static/templates/*")
 	registerEndpoints(e)
@@ -39,15 +40,15 @@ func registerEndpoints(e *echo.Echo) {
 	e.File("/", "static/index.html")
 
 	// side panels views
-	e.GET("/views/movies", GetAllMovieHandler)
-	e.GET("/views/search_movie", SimpleViewHandler("search_movie"))
-	e.GET("/views/add_movie", SimpleViewHandler("add_movie"))
-	e.GET("/views/edit-movie/:id", EditMovieHandler)
-	e.GET("/views/movies/sort", SortMovieHandler)
+	e.GET("/views/movies", hdls.GetAllMovie)
+	e.GET("/views/search_movie", hdls.SimpleView("search_movie"))
+	e.GET("/views/add_movie", hdls.SimpleView("add_movie"))
+	e.GET("/views/edit-movie/:id", hdls.EditMovie)
+	e.GET("/views/movies/sort", hdls.SortMovie)
 
 	// movie handlers
-	e.DELETE("/movie/:id", DeleteMovieHandler)
-	e.GET("/movie", GetMovieHandler)
-	e.POST("/movie", PostMovieHandler)
-	e.PUT("/movie/:id", PutMovieHandler)
+	e.DELETE("/movie/:id", hdls.DeleteMovie)
+	e.GET("/movie", hdls.GetMovie)
+	e.POST("/movie", hdls.PostMovie)
+	e.PUT("/movie/:id", hdls.PutMovie)
 }

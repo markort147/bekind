@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"strconv"
@@ -27,10 +27,10 @@ type MovieList struct {
 	Body     []movies.Movie
 }
 
-// GetAllMovieHandler is a handler function that returns the "movie-list" template with the list of all movies.
+// GetAllMovie is a handler function that returns the "movie-list" template with the list of all movies.
 // The movies are sorted by the field specified in the "sorted-by" query parameter.
 // The "desc" query parameter is used to specify the sorting order (true for descending, false for ascending).
-func GetAllMovieHandler(c echo.Context) error {
+func GetAllMovie(c echo.Context) error {
 
 	var sortedBy movies.MovieField
 
@@ -56,9 +56,9 @@ func GetAllMovieHandler(c echo.Context) error {
 	})
 }
 
-// SortMovieHandler is a handler function that returns the "movie-list" template with the list of movies sorted by the given field.
+// SortMovie is a handler function that returns the "movie-list" template with the list of movies sorted by the given field.
 // The field to sort by is specified in the "by" query parameter.
-func SortMovieHandler(c echo.Context) error {
+func SortMovie(c echo.Context) error {
 
 	sortedBy, err := movies.ParseMovieField(c.QueryParam("by"))
 	if err != nil {
@@ -84,18 +84,18 @@ func SortMovieHandler(c echo.Context) error {
 	})
 }
 
-// SimpleViewHandler is a handler function that returns a simple view with the given template name.
+// SimpleView is a handler function that returns a simple view with the given template name.
 // The function is used to render static HTML pages that do not require any data from the server.
-func SimpleViewHandler(templateName string) echo.HandlerFunc {
+func SimpleView(templateName string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.Render(200, templateName, nil)
 	}
 }
 
-// DeleteMovieHandler is a handler function that deletes a movie from the database.
+// DeleteMovie is a handler function that deletes a movie from the database.
 // The id of the movie to delete is specified in the URL path.
 // The function returns a 200 status code if the movie was deleted successfully, or a 404 status code if the movie was not found.
-func DeleteMovieHandler(c echo.Context) error {
+func DeleteMovie(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.NoContent(echo.ErrBadRequest.Code)
@@ -108,9 +108,9 @@ func DeleteMovieHandler(c echo.Context) error {
 	return c.NoContent(200)
 }
 
-// GetMovieHandler is a handler function that returns the "movie-list" template with the list of movies that match the given ids.
+// GetMovie is a handler function that returns the "movie-list" template with the list of movies that match the given ids.
 // The ids are specified by the "id" form value, which is a comma-separated list of movie ids.
-func GetMovieHandler(c echo.Context) error {
+func GetMovie(c echo.Context) error {
 	value := strings.ReplaceAll(c.FormValue("id"), " ", "")
 	stringIds := strings.FieldsFunc(value, func(r rune) bool { return r == ',' })
 
@@ -131,10 +131,10 @@ func GetMovieHandler(c echo.Context) error {
 	})
 }
 
-// PostMovieHandler is a handler function that creates a new movie and adds it to the database.
+// PostMovie is a handler function that creates a new movie and adds it to the database.
 // The movie data is specified in the form data of the request.
 // The function returns the "movie-list" template with the updated list of movies.
-func PostMovieHandler(c echo.Context) error {
+func PostMovie(c echo.Context) error {
 	movies.Save(movies.NewMovie(
 		c.FormValue("title"),
 		c.FormValue("year"),
@@ -148,9 +148,9 @@ func PostMovieHandler(c echo.Context) error {
 	})
 }
 
-// EditMovieHandler is a handler function that returns the "edit_movie" template with the movie data to edit.
+// EditMovie is a handler function that returns the "edit_movie" template with the movie data to edit.
 // The id of the movie to edit is specified in the URL path.
-func EditMovieHandler(c echo.Context) error {
+func EditMovie(c echo.Context) error {
 	strId := c.Param("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
@@ -165,11 +165,11 @@ func EditMovieHandler(c echo.Context) error {
 	return c.Render(200, "edit_movie", movie)
 }
 
-// PutMovieHandler is a handler function that updates the movie data in the database.
+// PutMovie is a handler function that updates the movie data in the database.
 // The id of the movie to update is specified in the URL path.
 // The new movie data is specified in the form data of the request.
 // The function returns the "movie-list" template with the updated list of movies.
-func PutMovieHandler(c echo.Context) error {
+func PutMovie(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	movies.Update(id, movies.NewMovie(
 		c.FormValue("title"),
