@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/bekind/bekindfrontend/config"
 	"github.com/bekind/bekindfrontend/log"
 	"github.com/bekind/bekindfrontend/movies"
 
@@ -9,13 +12,15 @@ import (
 )
 
 func main() {
+	config.FromFile("config.yml")
+
 	log.Init()
 
 	movies.Init()
 	movies.FillForTests()
 
 	e := initEcho()
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", config.GetConfig().Server.Port)))
 }
 
 // initEcho initializes the echo server
