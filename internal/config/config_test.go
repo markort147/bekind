@@ -24,9 +24,6 @@ func (m *mockReader) Read(p []byte) (n int, err error) {
 func TestLoadConfig(t *testing.T) {
 
 	t.Run("testing private func loadConfig", func(t *testing.T) {
-
-		cfg = Config{}
-
 		mockConfig := &mockReader{
 			data: `server:
   host: localhost
@@ -39,19 +36,19 @@ log:
 
 		want := []struct {
 			value     any
-			retriever func(Config) any
+			retriever func(*Config) any
 		}{
-			{"localhost", func(c Config) any { return c.Server.Host }},
-			{8080, func(c Config) any { return c.Server.Port }},
-			{"debug", func(c Config) any { return c.Log.Level }},
-			{"stdout", func(c Config) any { return c.Log.Output }},
+			{"localhost", func(c *Config) any { return c.Server.Host }},
+			{8080, func(c *Config) any { return c.Server.Port }},
+			{"debug", func(c *Config) any { return c.Log.Level }},
+			{"stdout", func(c *Config) any { return c.Log.Output }},
 		}
 
-		if err := loadConfig(mockConfig); err != nil {
+		cfg, err := parseConfig(mockConfig)
+		if err != nil {
 			t.Fatal(err)
 		}
 
-		cfg = GetConfig()
 		for _, w := range want {
 			if got := w.retriever(cfg); got != w.value {
 				t.Errorf("Expected %v, got %v", w.value, got)
@@ -60,16 +57,13 @@ log:
 	})
 
 	t.Run("testing private func loadConfig with invalid yaml", func(t *testing.T) {
-
-		cfg = Config{}
-
 		mockConfig := &mockReader{
 			data: `	server:
   host: localhost
   port: 8080`,
 		}
 
-		if err := loadConfig(mockConfig); !strings.Contains(err.Error(), "error loading config") {
+		if _, err := parseConfig(mockConfig); !strings.Contains(err.Error(), "error loading config") {
 			t.Errorf("Expected error containing %q, got '%v'", "error loading config", err)
 		}
 	})
@@ -78,9 +72,6 @@ log:
 func TestFromFile(t *testing.T) {
 
 	t.Run("testing loading config from file", func(t *testing.T) {
-
-		cfg = Config{}
-
 		fileContent := `server:
   host: localhost
   port: 8080
@@ -95,21 +86,21 @@ log:
 			t.Fatal(err)
 		}
 
-		if err := FromFile(file); err != nil {
+		cfg, err := FromFile(file)
+		if err != nil {
 			t.Fatal(err)
 		}
 
 		want := []struct {
 			value     any
-			retriever func(Config) any
+			retriever func(*Config) any
 		}{
-			{"localhost", func(c Config) any { return c.Server.Host }},
-			{8080, func(c Config) any { return c.Server.Port }},
-			{"debug", func(c Config) any { return c.Log.Level }},
-			{"stdout", func(c Config) any { return c.Log.Output }},
+			{"localhost", func(c *Config) any { return c.Server.Host }},
+			{8080, func(c *Config) any { return c.Server.Port }},
+			{"debug", func(c *Config) any { return c.Log.Level }},
+			{"stdout", func(c *Config) any { return c.Log.Output }},
 		}
 
-		cfg = GetConfig()
 		for _, w := range want {
 			if got := w.retriever(cfg); got != w.value {
 				t.Errorf("Expected %v, got %v", w.value, got)
@@ -121,7 +112,7 @@ log:
 
 		file := "infalid_file"
 
-		if err := FromFile(file); err == nil {
+		if _, err := FromFile(file); err == nil {
 			t.Errorf("Expected error, got nil")
 		}
 	})

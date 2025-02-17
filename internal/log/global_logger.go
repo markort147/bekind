@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	cfg "github.com/bekind/bekindfrontend/internal/config"
+	"github.com/bekind/bekindfrontend/internal/config"
 	"github.com/labstack/gommon/log"
 )
 
@@ -20,9 +20,9 @@ var (
 	logFile *os.File
 )
 
-func Init() {
-	Logger.SetLevel(parseLevel(cfg.GetConfig().Log.Level))
-	Logger.SetOutput(parseOutput(cfg.GetConfig().Log.Output))
+func Init(cfg *config.Config) {
+	Logger.SetLevel(ParseLevel(cfg.Log.Level))
+	Logger.SetOutput(ParseOutput(cfg.Log.Output))
 }
 
 func Close() {
@@ -36,7 +36,7 @@ func Test() {
 	Logger.SetOutput(os.Stdout)
 }
 
-func parseLevel(level string) log.Lvl {
+func ParseLevel(level string) log.Lvl {
 	switch level {
 	case "debug":
 		return log.DEBUG
@@ -53,7 +53,7 @@ func parseLevel(level string) log.Lvl {
 	}
 }
 
-func parseOutput(output string) io.Writer {
+func ParseOutput(output string) io.Writer {
 	switch output {
 	case "stdout":
 		return os.Stdout

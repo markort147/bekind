@@ -3,5 +3,5 @@ server:
   port: 8080
 
 log:
-  level: debug
+  level: info
   output: /home/markort/var/log/bekindfrontend.log

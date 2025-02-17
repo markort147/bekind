@@ -19,26 +19,22 @@ type Config struct {
 	} `yaml:"log"`
 }
 
-var cfg Config
-
-func loadConfig(mockConfig io.Reader) error {
+func parseConfig(mockConfig io.Reader) (*Config, error) {
 	decoder := yaml.NewDecoder(mockConfig)
+
+	var cfg Config
 	if err := decoder.Decode(&cfg); err != nil {
-		return fmt.Errorf("error loading config: %v", err)
+		return nil, fmt.Errorf("error loading config: %v", err)
 	}
-	return nil
+	return &cfg, nil
 }
 
-func GetConfig() Config {
-	return cfg
-}
-
-func FromFile(file string) error {
+func FromFile(file string) (*Config, error) {
 	f, err := os.Open(file)
 	if err != nil {
-		return fmt.Errorf("error opening file: %v", err)
+		return nil, fmt.Errorf("error opening file: %v", err)
 	}
 	defer f.Close()
 
-	return loadConfig(f)
+	return parseConfig(f)
 }
