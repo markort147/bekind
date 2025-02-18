@@ -1,6 +1,6 @@
 {{ define "add_movie" }}
 <div id="add_movie_form_container">
-    <form hx-post="/movie" hx-target="#main-view" style="display: flex; flex-direction: column;">
+    <form hx-post="movie" hx-target="#main-view" style="display: flex; flex-direction: column;">
         <div class="field">
             <label for="add_movie_title" class="label">Title:</label>
             <input class="input" type="text" name="title" id="add_movie_title"></input>

@@ -1,6 +1,6 @@
 {{ define "edit_movie" }}
 <div id="edit_movie_form_container">
-    <form hx-put="/movie/{{ .Id }}" hx-target="#main-view" style="display: flex; flex-direction: column;">
+    <form hx-put="movie/{{ .Id }}" hx-target="#main-view" style="display: flex; flex-direction: column;">
         <div class="field">
             <label for="add_movie_title" class="label">Title:</label>
             <input class="input" type="text" name="title" id="add_movie_title" value="{{ .Title }}"></input>
