@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"html/template"
 	"io"
 
@@ -27,8 +28,8 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	return t.tmpl.ExecuteTemplate(w, name, data)
 }
 
-func newTemplate(path string) echo.Renderer {
+func newTemplate(fs embed.FS, path string) echo.Renderer {
 	return &Template{
-		tmpl: template.Must(template.ParseGlob(path)),
+		tmpl: template.Must(template.ParseFS(fs, path)),
 	}
 }

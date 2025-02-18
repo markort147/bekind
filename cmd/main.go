@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"net/http"
 	"os"
@@ -18,6 +19,9 @@ import (
 	"github.com/labstack/echo/v4"
 	mdw "github.com/labstack/echo/v4/middleware"
 )
+
+//go:embed static/*
+var staticFiles embed.FS
 
 func main() {
 	cfg, err := config.FromFile("config.yml")
@@ -52,7 +56,7 @@ func initEcho(cfg *config.Config) (*echo.Echo, *sync.WaitGroup) {
 	}))
 	e.Logger.SetLevel(log.ParseLevel(cfg.Log.Level))
 	e.Use(mdw.Recover())
-	e.Renderer = newTemplate("static/templates/*")
+	e.Renderer = newTemplate(staticFiles, "static/templates/*")
 	registerEndpoints(e)
 
 	// intercept shutdown signals
@@ -90,7 +94,7 @@ func interceptShutdown(e *echo.Echo, quit chan os.Signal, wg *sync.WaitGroup) {
 
 func registerEndpoints(e *echo.Echo) {
 	// home page
-	e.File("/", "static/index.html")
+	e.FileFS("/", "index.html", echo.MustSubFS(staticFiles, "static"))
 
 	// side panels views
 	e.GET("/views/movies", hdls.GetAllMovie)
