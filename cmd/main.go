@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -24,6 +25,15 @@ import (
 var staticFiles embed.FS
 
 func main() {
+
+	var configPath string
+	flag.StringVar(&configPath, "config", "", "Path to the configuration file")
+	flag.Parse()
+	if configPath == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	cfg, err := config.FromFile("config.yml")
 	if err != nil {
 		log.Logger.Fatalf("Error loading config: %v", err)
