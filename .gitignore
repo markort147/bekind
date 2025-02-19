@@ -1,5 +1,5 @@
 tmp/
 .vscode/
+log/
 app*
-build.sh
 *.log

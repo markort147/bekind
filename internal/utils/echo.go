@@ -1,9 +1,9 @@
-package main
+package utils
 
 import (
-	"embed"
 	"html/template"
 	"io"
+	"io/fs"
 
 	"github.com/labstack/echo/v4"
 )
@@ -20,16 +20,16 @@ Here is the implementation of the echo.Renderer interface wrapped around the htm
 =========================
 */
 
-type Template struct {
+type TemplateRenderer struct {
 	tmpl *template.Template
 }
 
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.tmpl.ExecuteTemplate(w, name, data)
 }
 
-func newTemplate(fs embed.FS, path string) echo.Renderer {
-	return &Template{
+func NewTemplateRendererFromFS(fs fs.FS, path string) echo.Renderer {
+	return &TemplateRenderer{
 		tmpl: template.Must(template.ParseFS(fs, path)),
 	}
 }

@@ -4,4 +4,4 @@ server:
 
 log:
   level: info
-  output: /home/markort/var/log/bekindfrontend.log
+  output: stdout

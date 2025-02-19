@@ -12,17 +12,18 @@ import (
 	"syscall"
 	"time"
 
-	hdls "github.com/bekind/bekindfrontend/handlers"
+	"github.com/bekind/bekindfrontend/internal/api"
 	"github.com/bekind/bekindfrontend/internal/config"
 	"github.com/bekind/bekindfrontend/internal/log"
-	ms "github.com/bekind/bekindfrontend/movies"
+	ms "github.com/bekind/bekindfrontend/internal/movies"
+	"github.com/bekind/bekindfrontend/internal/utils"
 
 	"github.com/labstack/echo/v4"
 	mdw "github.com/labstack/echo/v4/middleware"
 )
 
-//go:embed static/*
-var staticFiles embed.FS
+//go:embed assets/*
+var assets embed.FS
 
 func main() {
 
@@ -66,7 +67,7 @@ func initEcho(cfg *config.Config) (*echo.Echo, *sync.WaitGroup) {
 	}))
 	e.Logger.SetLevel(log.ParseLevel(cfg.Log.Level))
 	e.Use(mdw.Recover())
-	e.Renderer = newTemplate(staticFiles, "static/templates/*")
+	e.Renderer = utils.NewTemplateRendererFromFS(assets, "assets/templates/*")
 	registerEndpoints(e)
 
 	// intercept shutdown signals
@@ -104,18 +105,18 @@ func interceptShutdown(e *echo.Echo, quit chan os.Signal, wg *sync.WaitGroup) {
 
 func registerEndpoints(e *echo.Echo) {
 	// home page
-	e.FileFS("/", "index.html", echo.MustSubFS(staticFiles, "static"))
+	e.FileFS("/", "index.html", echo.MustSubFS(assets, "assets"))
 
 	// side panels views
-	e.GET("/views/movies", hdls.GetAllMovie)
-	e.GET("/views/search_movie", hdls.SimpleView("search_movie"))
-	e.GET("/views/add_movie", hdls.SimpleView("add_movie"))
-	e.GET("/views/edit-movie/:id", hdls.EditMovie)
-	e.GET("/views/movies/sort", hdls.SortMovie)
+	e.GET("/views/movies", api.GetAllMovie)
+	e.GET("/views/search_movie", api.SimpleView("search_movie"))
+	e.GET("/views/add_movie", api.SimpleView("add_movie"))
+	e.GET("/views/edit-movie/:id", api.EditMovie)
+	e.GET("/views/movies/sort", api.SortMovie)
 
 	// movie handlers
-	e.DELETE("/movie/:id", hdls.DeleteMovie)
-	e.GET("/movie", hdls.GetMovie)
-	e.POST("/movie", hdls.PostMovie)
-	e.PUT("/movie/:id", hdls.PutMovie)
+	e.DELETE("/movie/:id", api.DeleteMovie)
+	e.GET("/movie", api.GetMovie)
+	e.POST("/movie", api.PostMovie)
+	e.PUT("/movie/:id", api.PutMovie)
 }

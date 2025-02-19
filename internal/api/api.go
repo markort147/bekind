@@ -1,11 +1,11 @@
-package handlers
+package api
 
 import (
 	"strconv"
 	"strings"
 
 	"github.com/bekind/bekindfrontend/internal/log"
-	"github.com/bekind/bekindfrontend/movies"
+	"github.com/bekind/bekindfrontend/internal/movies"
 	"github.com/labstack/echo/v4"
 )
 
