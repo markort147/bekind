@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bekind/bekindfrontend/internal/log"
-	"github.com/bekind/bekindfrontend/internal/movies"
 	"github.com/labstack/echo/v4"
+	"github.com/markort147/bekindfrontend/internal/log"
+	"github.com/markort147/bekindfrontend/internal/movies"
 )
 
 /*

@@ -4,8 +4,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/bekind/bekindfrontend/internal/config"
 	"github.com/labstack/gommon/log"
+	"github.com/markort147/bekindfrontend/internal/config"
 )
 
 /*
