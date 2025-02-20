@@ -50,7 +50,7 @@ Run the app:
 ~/go/bin/bekindrewind -config <path-to-your-config-yaml>
 ```
 ### Access the Web App
-Open your browser and go to http://localhost:<PORT> to view the app in action.
+Open your browser and go to http://localhost:[PORT] to view the app in action.
 
 ## Development with Air
 For a smoother development experience, I recommend using Air, which provides live reloading. The repository includes a .air.toml configuration file for easy integration with [Air](https://github.com/air-verse/air).
