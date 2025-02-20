@@ -22,7 +22,7 @@ First, install Go if you haven't already. You can download Go from the official 
 Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/markort147/BeKindFrontend.git
+git clone https://github.com/markort147/bekind.git
 ```
 
 ##### Build the App
