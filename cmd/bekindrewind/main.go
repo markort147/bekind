@@ -35,7 +35,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cfg, err := config.FromFile("config.yml")
+	cfg, err := config.FromFile(configPath)
 	if err != nil {
 		log.Logger.Fatalf("Error loading config: %v", err)
 	}
