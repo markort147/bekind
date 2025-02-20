@@ -1,6 +1,6 @@
 package movies
 
-import "github.com/markort147/bekindfrontend/internal/log"
+import "github.com/markort147/bekind/internal/log"
 
 /*
 === Movies ===

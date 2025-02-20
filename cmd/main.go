@@ -12,11 +12,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/markort147/bekindfrontend/internal/api"
-	"github.com/markort147/bekindfrontend/internal/config"
-	"github.com/markort147/bekindfrontend/internal/log"
-	ms "github.com/markort147/bekindfrontend/internal/movies"
-	"github.com/markort147/bekindfrontend/internal/utils"
+	"github.com/markort147/bekind/internal/api"
+	"github.com/markort147/bekind/internal/config"
+	"github.com/markort147/bekind/internal/log"
+	ms "github.com/markort147/bekind/internal/movies"
+	"github.com/markort147/bekind/internal/utils"
 
 	"github.com/labstack/echo/v4"
 	mdw "github.com/labstack/echo/v4/middleware"

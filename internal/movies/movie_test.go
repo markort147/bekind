@@ -3,7 +3,7 @@ package movies
 import (
 	"testing"
 
-	"github.com/markort147/bekindfrontend/internal/log"
+	"github.com/markort147/bekind/internal/log"
 )
 
 func TestGetMovieFieldLabel(t *testing.T) {

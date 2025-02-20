@@ -1,4 +1,4 @@
-module github.com/markort147/bekindfrontend
+module github.com/markort147/bekind
 
 go 1.23.5
 

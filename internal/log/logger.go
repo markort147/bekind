@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/labstack/gommon/log"
-	"github.com/markort147/bekindfrontend/internal/config"
+	"github.com/markort147/bekind/internal/config"
 )
 
 /*

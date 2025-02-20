@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/markort147/bekindfrontend/internal/log"
-	"github.com/markort147/bekindfrontend/internal/movies"
+	"github.com/markort147/bekind/internal/log"
+	"github.com/markort147/bekind/internal/movies"
 )
 
 /*
