@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = ["-config", "./config.yml"]
   bin = "./tmp/main"
-  cmd = "go build -o ./tmp/main ./cmd/"
+  cmd = "go build -o ./tmp/main ./cmd/bekindrewind"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []
