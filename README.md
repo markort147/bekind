@@ -13,24 +13,44 @@ Before running the app, ensure that you have Go version 1.22 or higher installed
 
 ## Installation and running the app
 
-### Step 1: Install Go 
-First, install Go (version 1.22 or higher) if you haven't already. You can download Go from the official website: https://golang.org/dl/.
+### Install Go 
+First, install Go if you haven't already. You can download Go from the official website: https://golang.org/dl/.
 
-### Step 2: Clone the Repository
+#### Building from the source
+
+##### Clone the Repository
 Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/markort147/BeKindFrontend.git
+git clone https://github.com/markort147/bekind.git
 ```
 
-### Step 3: Run the App
+##### Build the App
 Navigate to the directory where you cloned the repo, then run the following command:
 ```bash
-go run ./cmd/.
+go build ./cmd/bekindrewind/ -o bekindrewind
 ```
 
-### Step 4: Access the Web App
-Open your browser and go to http://localhost:8080 to view the app in action.
+##### Run the app
+Run the app:
+```bash
+./bekindrewind -config <path-to-your-config-yaml>
+```
+
+#### As a Go command
+
+##### Install via Go
+```bash
+go install github.com/markort147/bekind/cmd/bekindrewind@latest
+```
+
+##### Run the app
+Run the app:
+```bash
+~/go/bin/bekindrewind -config <path-to-your-config-yaml>
+```
+### Access the Web App
+Open your browser and go to http://localhost:[PORT] to view the app in action.
 
 ## Development with Air
 For a smoother development experience, I recommend using Air, which provides live reloading. The repository includes a .air.toml configuration file for easy integration with [Air](https://github.com/air-verse/air).
