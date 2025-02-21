@@ -6,14 +6,14 @@
             <input class="input" type="text" name="title" id="add_movie_title" value="{{ .Title }}"></input>
         </div>
         <div class="field">
-            <label for="add_movie_year" class="label">Year:</label>
-            <input class="input" type="text" name="year" id="add_movie_year" value="{{ .Year }}"></input>
+            <label for="add_movie_year" class="label">Year:</label>      
+            {{ template "year_input" (WrapYearValidation .Year true) }}
         </div>
         <div class="field">
             <label for="add_movie_director" class="label">Director:</label>
             <input class="input" type="text" name="director" id="add_movie_director" value="{{ .Director }}"></input>
         </div>
-        <button type="submit" class="button is-primary is-light is-small">Confirm</button>
+        <button type="submit" class="button verified-button is-primary is-light is-small">Confirm</button>
     </form>
 </div>
 {{ end }}

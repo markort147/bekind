@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/markort147/bekind/internal/log"
 	"github.com/markort147/bekind/internal/movies"
+	"github.com/markort147/bekind/internal/utils"
 )
 
 /*
@@ -180,5 +181,30 @@ func PutMovie(c echo.Context) error {
 		SortedBy: "id",
 		Desc:     false,
 		Body:     movies.FindAll(nil),
+	})
+}
+
+// ValidateYear is a helper function that validates the year format.
+func ValidateYear(c echo.Context) error {
+	year := c.FormValue("year")
+
+	valid := true
+
+	if len(year) != 4 {
+		valid = false
+	}
+
+	value, err := strconv.Atoi(year)
+	if err != nil {
+		valid = false
+	}
+
+	if value < 1900 {
+		valid = false
+	}
+
+	return c.Render(200, "year_input", utils.YearValidation{
+		Year:  year,
+		Valid: valid,
 	})
 }

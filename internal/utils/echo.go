@@ -29,7 +29,23 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 }
 
 func NewTemplateRendererFromFS(fs fs.FS, path string) echo.Renderer {
+	tmpl := template.New("templates")
+	tmpl.Funcs(template.FuncMap{
+		"WrapYearValidation": WrapYearValidation,
+	})
 	return &TemplateRenderer{
-		tmpl: template.Must(template.ParseFS(fs, path)),
+		tmpl: template.Must(tmpl.ParseFS(fs, path)),
+	}
+}
+
+type YearValidation struct {
+	Year  string
+	Valid bool
+}
+
+func WrapYearValidation(year string, valid bool) YearValidation {
+	return YearValidation{
+		Year:  year,
+		Valid: valid,
 	}
 }

@@ -119,4 +119,7 @@ func registerEndpoints(e *echo.Echo) {
 	e.GET("/movie", api.GetMovie)
 	e.POST("/movie", api.PostMovie)
 	e.PUT("/movie/:id", api.PutMovie)
+
+	// form validators
+	e.POST("/validate/year", api.ValidateYear)
 }

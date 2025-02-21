@@ -26,4 +26,45 @@
     </div>
 </body>
 
+<script>
+    // Function to handle the class change on elements with class "verified-input"
+    function handleVerifiedInputClassChange() {
+        const verifiedInputs = document.querySelectorAll('.verified-input');
+        const verifiedButtons = document.querySelectorAll('.verified-button');
+
+        verifiedInputs.forEach(input => {
+            // Initial check
+            if (input.classList.contains('is-danger')) {
+                verifiedButtons.forEach(button => {
+                    button.setAttribute('disabled', 'disabled');
+                });
+            }
+
+            // Observe class changes
+            const observer = new MutationObserver(() => {
+                let anyDanger = false;
+                verifiedInputs.forEach(input => {
+                    if (input.classList.contains('is-danger')) {
+                        anyDanger = true;
+                    }
+                });
+                
+                verifiedButtons.forEach(button => {
+                    if (anyDanger) {
+                        button.setAttribute('disabled', 'disabled');
+                    } else {
+                        button.removeAttribute('disabled');
+                    }
+                });
+            });
+
+            observer.observe(input, { attributes: true, attributeFilter: ['class'] });
+        });
+    }
+
+    // Initialize the class change handler on DOMContentLoaded and htmx:afterSwap
+    document.addEventListener('DOMContentLoaded', handleVerifiedInputClassChange);
+    document.body.addEventListener('htmx:afterSwap', handleVerifiedInputClassChange);
+</script>
+
 </html>
