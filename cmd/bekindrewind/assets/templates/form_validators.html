@@ -1,4 +1,4 @@
 {{ define "year_input" }}
 <input class="input verified-input {{if .Valid}} is-success {{ else }} is-danger {{ end }}" type="text" name="year" id="add_movie_year"
-    hx-post="/validate/year" hx-target="this" hx-swap="outerHTML" hx-trigger="keyup changed delay:150ms" value="{{- .Year -}}"></input>
+    hx-post="validate/year" hx-target="this" hx-swap="outerHTML" hx-trigger="keyup changed delay:150ms" value="{{- .Year -}}"></input>
 {{ end }}
