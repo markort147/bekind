@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
+	ms "github.com/markort147/bekind/cmd/bekindrewind/movies"
 	"github.com/markort147/bekind/internal/log"
-	"github.com/markort147/bekind/internal/movies"
 	"strconv"
 	"strings"
 )
@@ -23,7 +23,7 @@ The body is rendered using the Go template engine.
 type MovieList struct {
 	SortedBy string
 	Desc     bool
-	Body     []movies.Movie
+	Body     []ms.Movie
 }
 
 // allMoviesView is a handler function that returns the "movie-list" template with the list of all ms.
@@ -31,12 +31,12 @@ type MovieList struct {
 // The "desc" query parameter is used to specify the sorting order (true for descending, false for ascending).
 func allMoviesView(c echo.Context) error {
 
-	sorting := movies.SortInfo{
-		SortedBy: movies.StrToMF(c.QueryParam("sorted-by")),
+	sorting := ms.SortInfo{
+		SortedBy: ms.StrToMF(c.QueryParam("sorted-by")),
 		Desc:     c.QueryParam("desc") == "true",
 	}
 
-	sortedByLabel, err := movies.MFToStr(sorting.SortedBy)
+	sortedByLabel, err := ms.MFToStr(sorting.SortedBy)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func allMoviesView(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: sortedByLabel,
 		Desc:     sorting.Desc,
-		Body:     movies.FindAll(&sorting),
+		Body:     ms.FindAll(&sorting),
 	})
 }
 
@@ -52,13 +52,13 @@ func allMoviesView(c echo.Context) error {
 // The field to sort by is specified in the "by" query parameter.
 func sortMovies(c echo.Context) error {
 
-	sortedBy := movies.StrToMF(c.QueryParam("by"))
-	newSorting := movies.SortInfo{
+	sortedBy := ms.StrToMF(c.QueryParam("by"))
+	newSorting := ms.SortInfo{
 		SortedBy: sortedBy,
-		Desc:     movies.CurrentSorting.SortedBy == sortedBy && !movies.CurrentSorting.Desc,
+		Desc:     ms.CurrentSorting.SortedBy == sortedBy && !ms.CurrentSorting.Desc,
 	}
 
-	movieFieldLabel, err := movies.MFToStr(newSorting.SortedBy)
+	movieFieldLabel, err := ms.MFToStr(newSorting.SortedBy)
 	if err != nil {
 		panic(err) // it should be impossible to get an error here
 	}
@@ -66,7 +66,7 @@ func sortMovies(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: movieFieldLabel,
 		Desc:     newSorting.Desc,
-		Body:     movies.FindAll(&newSorting),
+		Body:     ms.FindAll(&newSorting),
 	})
 }
 
@@ -87,7 +87,7 @@ func deleteMovie(c echo.Context) error {
 		return c.NoContent(echo.ErrBadRequest.Code)
 	}
 
-	deleted := movies.DeleteById(id)
+	deleted := ms.DeleteById(id)
 	if !deleted {
 		return c.NoContent(echo.ErrNotFound.Code)
 	}
@@ -113,7 +113,7 @@ func getMovie(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     movies.FindByIds(ids, nil),
+		Body:     ms.FindByIds(ids, nil),
 	})
 }
 
@@ -121,7 +121,7 @@ func getMovie(c echo.Context) error {
 // The movie data is specified in the form data of the request.
 // The function returns the "movie-list" template with the updated list of ms.
 func postMovie(c echo.Context) error {
-	movies.Save(movies.Movie{
+	ms.Save(ms.Movie{
 		Title:    c.FormValue("title"),
 		Year:     c.FormValue("year"),
 		Director: c.FormValue("director"),
@@ -130,7 +130,7 @@ func postMovie(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     movies.FindAll(nil),
+		Body:     ms.FindAll(nil),
 	})
 }
 
@@ -143,7 +143,7 @@ func editMovieView(c echo.Context) error {
 		log.Logger.Fatal(err)
 	}
 
-	movie, err := movies.FindById(id)
+	movie, err := ms.FindById(id)
 	if err != nil {
 		log.Logger.Fatal(err)
 	}
@@ -157,7 +157,7 @@ func editMovieView(c echo.Context) error {
 // The function returns the "movie-list" template with the updated list of ms.
 func putMovie(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	movies.Update(id, movies.Movie{
+	ms.Update(id, ms.Movie{
 		Title:    c.FormValue("title"),
 		Year:     c.FormValue("year"),
 		Director: c.FormValue("director"),
@@ -165,7 +165,7 @@ func putMovie(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     movies.FindAll(nil),
+		Body:     ms.FindAll(nil),
 	})
 }
 

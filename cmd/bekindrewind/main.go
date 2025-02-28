@@ -5,9 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	ms "github.com/markort147/bekind/cmd/bekindrewind/movies"
 	"github.com/markort147/bekind/internal/echotmpl"
 	"github.com/markort147/bekind/internal/log"
-	ms "github.com/markort147/bekind/internal/movies"
 	"github.com/markort147/bekind/internal/ymlcfg"
 	"os"
 )
