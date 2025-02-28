@@ -1,13 +1,11 @@
-package api
+package main
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/labstack/echo/v4"
 	"github.com/markort147/bekind/internal/log"
 	"github.com/markort147/bekind/internal/movies"
-	"github.com/markort147/bekind/internal/utils"
+	"strconv"
+	"strings"
 )
 
 /*
@@ -21,31 +19,24 @@ The body is rendered using the Go template engine.
 */
 
 // MovieList struct is used to pass data to the movie-list template.
-// The struct contains the list of movies to display, the field to sort by, and the sorting order.
+// The struct contains the list of ms to display, the field to sort by, and the sorting order.
 type MovieList struct {
 	SortedBy string
 	Desc     bool
 	Body     []movies.Movie
 }
 
-// GetAllMovie is a handler function that returns the "movie-list" template with the list of all movies.
-// The movies are sorted by the field specified in the "sorted-by" query parameter.
+// allMoviesView is a handler function that returns the "movie-list" template with the list of all ms.
+// The ms are sorted by the field specified in the "sorted-by" query parameter.
 // The "desc" query parameter is used to specify the sorting order (true for descending, false for ascending).
-func GetAllMovie(c echo.Context) error {
-
-	var sortedBy movies.MovieField
-
-	sortedBy, err := movies.ParseMovieField(c.QueryParam("sorted-by"))
-	if err != nil {
-		sortedBy = movies.MovieId
-	}
+func allMoviesView(c echo.Context) error {
 
 	sorting := movies.SortInfo{
-		SortedBy: sortedBy,
+		SortedBy: movies.StrToMF(c.QueryParam("sorted-by")),
 		Desc:     c.QueryParam("desc") == "true",
 	}
 
-	sortedByLabel, err := movies.GetMovieFieldLabel(sorting.SortedBy)
+	sortedByLabel, err := movies.MFToStr(sorting.SortedBy)
 	if err != nil {
 		return err
 	}
@@ -57,25 +48,19 @@ func GetAllMovie(c echo.Context) error {
 	})
 }
 
-// SortMovie is a handler function that returns the "movie-list" template with the list of movies sorted by the given field.
+// sortMovies is a handler function that returns the "movie-list" template with the list of ms sorted by the given field.
 // The field to sort by is specified in the "by" query parameter.
-func SortMovie(c echo.Context) error {
+func sortMovies(c echo.Context) error {
 
-	sortedBy, err := movies.ParseMovieField(c.QueryParam("by"))
-	if err != nil {
-		return err
-	}
-
-	currSorting := movies.CurrentSorting
-
+	sortedBy := movies.StrToMF(c.QueryParam("by"))
 	newSorting := movies.SortInfo{
 		SortedBy: sortedBy,
-		Desc:     currSorting.SortedBy == sortedBy && !currSorting.Desc,
+		Desc:     movies.CurrentSorting.SortedBy == sortedBy && !movies.CurrentSorting.Desc,
 	}
 
-	movieFieldLabel, err := movies.GetMovieFieldLabel(newSorting.SortedBy)
+	movieFieldLabel, err := movies.MFToStr(newSorting.SortedBy)
 	if err != nil {
-		return err
+		panic(err) // it should be impossible to get an error here
 	}
 
 	return c.Render(200, "movie-list", MovieList{
@@ -85,18 +70,18 @@ func SortMovie(c echo.Context) error {
 	})
 }
 
-// SimpleView is a handler function that returns a simple view with the given template name.
+// staticView is a handler function that returns a simple view with the given template name.
 // The function is used to render static HTML pages that do not require any data from the server.
-func SimpleView(templateName string) echo.HandlerFunc {
+func staticView(templateName string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.Render(200, templateName, nil)
 	}
 }
 
-// DeleteMovie is a handler function that deletes a movie from the database.
+// deleteMovie is a handler function that deletes a movie from the database.
 // The id of the movie to delete is specified in the URL path.
 // The function returns a 200 status code if the movie was deleted successfully, or a 404 status code if the movie was not found.
-func DeleteMovie(c echo.Context) error {
+func deleteMovie(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.NoContent(echo.ErrBadRequest.Code)
@@ -109,9 +94,9 @@ func DeleteMovie(c echo.Context) error {
 	return c.NoContent(200)
 }
 
-// GetMovie is a handler function that returns the "movie-list" template with the list of movies that match the given ids.
+// getMovie is a handler function that returns the "movie-list" template with the list of ms that match the given ids.
 // The ids are specified by the "id" form value, which is a comma-separated list of movie ids.
-func GetMovie(c echo.Context) error {
+func getMovie(c echo.Context) error {
 	value := strings.ReplaceAll(c.FormValue("id"), " ", "")
 	stringIds := strings.FieldsFunc(value, func(r rune) bool { return r == ',' })
 
@@ -132,15 +117,15 @@ func GetMovie(c echo.Context) error {
 	})
 }
 
-// PostMovie is a handler function that creates a new movie and adds it to the database.
+// postMovie is a handler function that creates a new movie and adds it to the database.
 // The movie data is specified in the form data of the request.
-// The function returns the "movie-list" template with the updated list of movies.
-func PostMovie(c echo.Context) error {
-	movies.Save(movies.NewMovie(
-		c.FormValue("title"),
-		c.FormValue("year"),
-		c.FormValue("director"),
-	))
+// The function returns the "movie-list" template with the updated list of ms.
+func postMovie(c echo.Context) error {
+	movies.Save(movies.Movie{
+		Title:    c.FormValue("title"),
+		Year:     c.FormValue("year"),
+		Director: c.FormValue("director"),
+	})
 
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
@@ -149,9 +134,9 @@ func PostMovie(c echo.Context) error {
 	})
 }
 
-// EditMovie is a handler function that returns the "edit_movie" template with the movie data to edit.
+// editMovieView is a handler function that returns the "edit_movie" template with the movie data to edit.
 // The id of the movie to edit is specified in the URL path.
-func EditMovie(c echo.Context) error {
+func editMovieView(c echo.Context) error {
 	strId := c.Param("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
@@ -166,17 +151,17 @@ func EditMovie(c echo.Context) error {
 	return c.Render(200, "edit_movie", movie)
 }
 
-// PutMovie is a handler function that updates the movie data in the database.
+// putMovie is a handler function that updates the movie data in the database.
 // The id of the movie to update is specified in the URL path.
 // The new movie data is specified in the form data of the request.
-// The function returns the "movie-list" template with the updated list of movies.
-func PutMovie(c echo.Context) error {
+// The function returns the "movie-list" template with the updated list of ms.
+func putMovie(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	movies.Update(id, movies.NewMovie(
-		c.FormValue("title"),
-		c.FormValue("year"),
-		c.FormValue("director"),
-	))
+	movies.Update(id, movies.Movie{
+		Title:    c.FormValue("title"),
+		Year:     c.FormValue("year"),
+		Director: c.FormValue("director"),
+	})
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
@@ -184,8 +169,8 @@ func PutMovie(c echo.Context) error {
 	})
 }
 
-// ValidateYear is a helper function that validates the year format.
-func ValidateYear(c echo.Context) error {
+// validateYear is a helper function that validates the year format.
+func validateYear(c echo.Context) error {
 	year := c.FormValue("year")
 
 	valid := true
@@ -203,7 +188,7 @@ func ValidateYear(c echo.Context) error {
 		valid = false
 	}
 
-	return c.Render(200, "year_input", utils.YearValidation{
+	return c.Render(200, "year_input", YearValidation{
 		Year:  year,
 		Valid: valid,
 	})

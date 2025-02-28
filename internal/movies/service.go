@@ -29,7 +29,7 @@ var movies Movies
 
 // Init initializes the data with an empty list of movies
 func Init() {
-	movies = EmptyMovies()
+	movies = emptyMovies()
 }
 
 // FillForTests fills the in-memory storage with some mock data
@@ -41,14 +41,17 @@ func FillForTests() {
 		{Id: 4, Title: "Fight Club", Year: "1999", Director: "David Fincher"},
 	}
 	for _, m := range mock {
-		movies.AddMovie(m)
+		movies.addMovie(m)
 	}
 }
 
 // FindAll returns all movies sorted according to the given sortInfo
 func FindAll(sortInfo *SortInfo) []Movie {
 	if sortInfo == nil {
-		sortInfo = &defaultSorting
+		sortInfo = &SortInfo{
+			SortedBy: MovieId,
+			Desc:     false,
+		}
 	}
 
 	sortedMovies := make([]Movie, len(movies.Movies))
@@ -87,7 +90,10 @@ func FindByIds(ids []int, sortInfo *SortInfo) []Movie {
 	}
 
 	if sortInfo == nil {
-		sortInfo = &defaultSorting
+		sortInfo = &SortInfo{
+			SortedBy: MovieId,
+			Desc:     false,
+		}
 	}
 
 	sort.Sort(MovieSorter{SortInfo: *sortInfo, Movies: filteredMovies})
@@ -98,7 +104,7 @@ func FindByIds(ids []int, sortInfo *SortInfo) []Movie {
 
 // Save adds the given movie to the collection
 func Save(m Movie) Movie {
-	return movies.AddMovie(m)
+	return movies.addMovie(m)
 }
 
 // Update updates the movie with the given id
@@ -126,4 +132,11 @@ func DeleteById(id int) bool {
 	movies.Movies = append(movies.Movies[:remove], movies.Movies[remove+1:]...)
 	delete(movies.MoviesMap, id)
 	return true
+}
+
+// CurrentSorting is the current sorting information.
+// It is updated every time a new sorting is requested.
+var CurrentSorting = SortInfo{
+	SortedBy: MovieId,
+	Desc:     false,
 }

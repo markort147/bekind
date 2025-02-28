@@ -21,12 +21,12 @@ func TestGetMovieFieldLabel(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		label, err := GetMovieFieldLabel(tc.field)
+		label, err := MFToStr(tc.field)
 		if err != tc.err {
-			t.Fatalf("GetMovieFieldLabel(%d) returned error %v, want %v", tc.field, err, tc.err)
+			t.Fatalf("MFToStr(%d) returned error %v, want %v", tc.field, err, tc.err)
 		}
 		if label != tc.label {
-			t.Errorf("GetMovieFieldLabel(%d) = %s, want %s", tc.field, label, tc.label)
+			t.Errorf("MFToStr(%d) = %s, want %s", tc.field, label, tc.label)
 		}
 	}
 }
@@ -46,29 +46,29 @@ func TestParseMovieField(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		field, err := ParseMovieField(tc.label)
+		field, err := StrToMF(tc.label)
 		if err != tc.err {
-			t.Fatalf("ParseMovieField(%s) returned error %v, want %v", tc.label, err, tc.err)
+			t.Fatalf("StrToMF(%s) returned error %v, want %v", tc.label, err, tc.err)
 		}
 		if field != tc.field {
-			t.Errorf("ParseMovieField(%s) = %d, want %d", tc.label, field, tc.field)
+			t.Errorf("StrToMF(%s) = %d, want %d", tc.label, field, tc.field)
 		}
 	}
 }
 
 func TestNewMovie(t *testing.T) {
 	log.Test()
-	movie := NewMovie("The Matrix", "1999", "Lana Wachowski, Lilly Wachowski")
+	movie := Movie{Title: "The Matrix", Year: "1999", Director: "Lana Wachowski, Lilly Wachowski"}
 	if movie.Id != -1 {
-		t.Errorf("NewMovie().Id = %d, want -1", movie.Id)
+		t.Errorf("newMovie().Id = %d, want -1", movie.Id)
 	}
 	if movie.Title != "The Matrix" {
-		t.Errorf("NewMovie().Title = %s, want 'The Matrix'", movie.Title)
+		t.Errorf("newMovie().Title = %s, want 'The Matrix'", movie.Title)
 	}
 	if movie.Year != "1999" {
-		t.Errorf("NewMovie().Year = %s, want '1999'", movie.Year)
+		t.Errorf("newMovie().Year = %s, want '1999'", movie.Year)
 	}
 	if movie.Director != "Lana Wachowski, Lilly Wachowski" {
-		t.Errorf("NewMovie().Director = %s, want 'Lana Wachowski, Lilly Wachowski'", movie.Director)
+		t.Errorf("newMovie().Director = %s, want 'Lana Wachowski, Lilly Wachowski'", movie.Director)
 	}
 }

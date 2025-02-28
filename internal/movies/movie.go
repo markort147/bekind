@@ -11,6 +11,25 @@ This file contains the definition of the Movie type and related functions.
 ================
 */
 
+// Movie represents a movie entity.
+type Movie struct {
+	Id       int
+	Title    string
+	Year     string
+	Director string
+}
+
+// newMovie creates a new Movie instance.
+func newMovie(title, year, director string) Movie {
+	return Movie{
+		Id:       -1,
+		Title:    title,
+		Year:     year,
+		Director: director,
+	}
+}
+
+// MovieField represents a field of a Movie entity.
 type MovieField int
 
 const (
@@ -22,8 +41,8 @@ const (
 
 var ErrInvalidMovieField = errors.New("invalid MovieField value")
 
-// GetMovieFieldLabel returns the label for a MovieField value.
-func GetMovieFieldLabel(field MovieField) (string, error) {
+// MFToStr returns the label for a MovieField value.
+func MFToStr(field MovieField) (string, error) {
 	switch field {
 	case MovieId:
 		return "Id", nil
@@ -37,40 +56,16 @@ func GetMovieFieldLabel(field MovieField) (string, error) {
 	return "", ErrInvalidMovieField
 }
 
-// Movie represents a movie entity.
-type Movie struct {
-	Id       int
-	Title    string
-	Year     string
-	Director string
-}
-
-// ParseMovieField returns the MovieField value for a label.
-func ParseMovieField(label string) (MovieField, error) {
+// StrToMF returns the MovieField value for a label.
+// The default value is MovieId.
+func StrToMF(label string) MovieField {
 	switch strings.ToLower(label) {
-	case "id":
-		return MovieId, nil
 	case "title":
-		return MovieTitle, nil
+		return MovieTitle
 	case "year":
-		return MovieYear, nil
+		return MovieYear
 	case "director":
-		return MovieDirector, nil
+		return MovieDirector
 	}
-	return -1, ErrInvalidMovieField
-}
-
-// NewMovie creates a new Movie instance.
-func NewMovie(title, year, director string) Movie {
-	return Movie{
-		Id:       -1,
-		Title:    title,
-		Year:     year,
-		Director: director,
-	}
-}
-
-// EmptyMovie returns an empty Movie instance.
-func EmptyMovie() Movie {
-	return Movie{}
+	return MovieId
 }

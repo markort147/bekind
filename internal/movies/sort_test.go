@@ -43,7 +43,7 @@ func TestMovieSorter(t *testing.T) {
 
 		// Check if sorted correctly
 		if !reflect.DeepEqual(sortedIDs, tc.output) {
-			sortingField, _ := GetMovieFieldLabel(tc.field)
+			sortingField, _ := MFToStr(tc.field)
 			t.Fatalf("Sorting by %v (Desc: %v) failed. Got %v, expected %v",
 				sortingField, tc.desc, sortedIDs, tc.output)
 		}

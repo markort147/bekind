@@ -1,4 +1,4 @@
-package config
+package ymlcfg
 
 import (
 	"io"
@@ -10,6 +10,17 @@ import (
 type mockReader struct {
 	data string
 	read bool
+}
+
+type mockCfg struct {
+	Server struct {
+		Host string `yaml:"Host"`
+		Port int    `yaml:"Port"`
+	} `yaml:"Server"`
+	Log struct {
+		Level  string `yaml:"Level"`
+		Output string `yaml:"Output"`
+	} `yaml:"Log"`
 }
 
 func (m *mockReader) Read(p []byte) (n int, err error) {
@@ -24,27 +35,27 @@ func (m *mockReader) Read(p []byte) (n int, err error) {
 func TestLoadConfig(t *testing.T) {
 
 	t.Run("testing private func loadConfig", func(t *testing.T) {
-		mockConfig := &mockReader{
-			data: `server:
-  host: localhost
-  port: 8080
+		reader := &mockReader{
+			data: `Server:
+  Host: localhost
+  Port: 8080
 
-log:
-  level: debug
-  output: stdout`,
+Log:
+  Level: debug
+  Output: stdout`,
 		}
 
 		want := []struct {
 			value     any
-			retriever func(*Config) any
+			retriever func(*mockCfg) any
 		}{
-			{"localhost", func(c *Config) any { return c.Server.Host }},
-			{8080, func(c *Config) any { return c.Server.Port }},
-			{"debug", func(c *Config) any { return c.Log.Level }},
-			{"stdout", func(c *Config) any { return c.Log.Output }},
+			{"localhost", func(c *mockCfg) any { return c.Server.Host }},
+			{8080, func(c *mockCfg) any { return c.Server.Port }},
+			{"debug", func(c *mockCfg) any { return c.Log.Level }},
+			{"stdout", func(c *mockCfg) any { return c.Log.Output }},
 		}
 
-		cfg, err := parseConfig(mockConfig)
+		cfg, err := parseConfig[mockCfg](reader)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -57,13 +68,13 @@ log:
 	})
 
 	t.Run("testing private func loadConfig with invalid yaml", func(t *testing.T) {
-		mockConfig := &mockReader{
-			data: `	server:
-  host: localhost
-  port: 8080`,
+		reader := &mockReader{
+			data: `	Server:
+  Host: localhost
+  Port: 8080`,
 		}
 
-		if _, err := parseConfig(mockConfig); !strings.Contains(err.Error(), "error loading config") {
+		if _, err := parseConfig[mockCfg](reader); !strings.Contains(err.Error(), "error loading config") {
 			t.Errorf("Expected error containing %q, got '%v'", "error loading config", err)
 		}
 	})
@@ -72,13 +83,13 @@ log:
 func TestFromFile(t *testing.T) {
 
 	t.Run("testing loading config from file", func(t *testing.T) {
-		fileContent := `server:
-  host: localhost
-  port: 8080
+		fileContent := `Server:
+  Host: localhost
+  Port: 8080
 
-log:
-  level: debug
-  output: stdout`
+Log:
+  Level: debug
+  Output: stdout`
 
 		file := os.TempDir() + "/config_test.yaml"
 		defer os.Remove(file)
@@ -86,19 +97,19 @@ log:
 			t.Fatal(err)
 		}
 
-		cfg, err := FromFile(file)
+		cfg, err := ParseFile[mockCfg](file)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		want := []struct {
 			value     any
-			retriever func(*Config) any
+			retriever func(*mockCfg) any
 		}{
-			{"localhost", func(c *Config) any { return c.Server.Host }},
-			{8080, func(c *Config) any { return c.Server.Port }},
-			{"debug", func(c *Config) any { return c.Log.Level }},
-			{"stdout", func(c *Config) any { return c.Log.Output }},
+			{"localhost", func(c *mockCfg) any { return c.Server.Host }},
+			{8080, func(c *mockCfg) any { return c.Server.Port }},
+			{"debug", func(c *mockCfg) any { return c.Log.Level }},
+			{"stdout", func(c *mockCfg) any { return c.Log.Output }},
 		}
 
 		for _, w := range want {
@@ -112,7 +123,7 @@ log:
 
 		file := "infalid_file"
 
-		if _, err := FromFile(file); err == nil {
+		if _, err := ParseFile[mockCfg](file); err == nil {
 			t.Errorf("Expected error, got nil")
 		}
 	})
