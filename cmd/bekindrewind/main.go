@@ -66,8 +66,8 @@ func main() {
 		RoutesRegister: func(e *echo.Echo) {
 			// main views
 			e.GET("/views/movies", allMoviesView)
-			e.GET("/views/search_movie", staticView("search_movie"))
-			e.GET("/views/add_movie", staticView("add_movie"))
+			e.GET("/views/search-movie", staticView("search_movie"))
+			e.GET("/views/add-movie", staticView("add_movie"))
 			e.GET("/views/edit-movie/:id", editMovieView)
 			// movies list operations
 			e.GET("/views/movies/sort", sortMovies)
