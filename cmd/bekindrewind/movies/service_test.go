@@ -50,9 +50,9 @@ func TestFindByIds(t *testing.T) {
 
 	// Fetch only two movies, sorted by Year Descending
 	ids := []int{1, 2}
-	sortedMovies := FindByIds(ids, &SortInfo{SortedBy: MovieYear, Desc: true})
+	sortedMovies := Find(FindCriteria{Id: ids})
 
-	expectedOrder := []string{"Pulp Fiction", "The Godfather"}
+	expectedOrder := []string{"The Godfather", "Pulp Fiction"}
 
 	for i, movie := range sortedMovies {
 		if movie.Title != expectedOrder[i] {

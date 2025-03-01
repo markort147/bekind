@@ -65,8 +65,7 @@ func main() {
 		LogLevel:      logLevel,
 		RoutesRegister: func(e *echo.Echo) {
 			// main views
-			e.GET("/views/movies", allMoviesView)
-			e.GET("/views/search-movie", staticView("search_movie"))
+			e.GET("/views/movies", staticView("search_movie"))
 			e.GET("/views/add-movie", staticView("add_movie"))
 			e.GET("/views/edit-movie/:id", editMovieView)
 			// movies list operations

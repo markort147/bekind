@@ -14,6 +14,8 @@ It is the only layer that has access to the data storage.
 ======================
 */
 
+/* ==== ERRORS ==== */
+
 type MovieServiceErr string
 
 const (
@@ -27,9 +29,22 @@ func (e MovieServiceErr) Error() string {
 // movies is the in-memory storage of movies
 var movies Movies
 
+var currMovies Movies
+
+// CurrentSorting is the current sorting information.
+// It is updated every time a new sorting is requested.
+var CurrentSorting = SortInfo{
+	SortedBy: MovieId,
+	Desc:     false,
+}
+
+// CurrCriteria is the current search criteria.
+var CurrCriteria = FindCriteria{}
+
 // Init initializes the data with an empty list of movies
 func Init() {
 	movies = emptyMovies()
+	currMovies = emptyMovies()
 }
 
 // FillForTests fills the in-memory storage with some mock data
@@ -42,6 +57,7 @@ func FillForTests() {
 	}
 	for _, m := range mock {
 		movies.addMovie(m)
+		currMovies.addMovie(m)
 	}
 }
 
@@ -74,62 +90,42 @@ func FindById(id int) (Movie, error) {
 	return *movie, nil
 }
 
-// FindByIds returns the movies with the given ids sorted according to the given sortInfo
-func FindByIds(ids []int, sortInfo *SortInfo) []Movie {
-	filteredMovies := make([]Movie, 0, len(ids))
-	seen := make(map[int]bool)
-
-	for _, id := range ids {
-		if _, alreadyAdded := seen[id]; alreadyAdded {
-			continue
-		}
-		if movie, exists := movies.MoviesMap[id]; exists {
-			filteredMovies = append(filteredMovies, *movie)
-		}
-		seen[id] = true
-	}
-
-	if sortInfo == nil {
-		sortInfo = &SortInfo{
-			SortedBy: MovieId,
-			Desc:     false,
-		}
-	}
-
-	sort.Sort(MovieSorter{SortInfo: *sortInfo, Movies: filteredMovies})
-	CurrentSorting = *sortInfo
-	log.Logger.Debugf("FindByIds. Sorted according to %v: %v", *sortInfo, filteredMovies)
-	return filteredMovies
-}
-
 type FindCriteria struct {
 	Id    []int
 	Title string
 }
 
-func Find(criteria FindCriteria) []Movie {
+func Find(criteria *FindCriteria, sortInfo *SortInfo) []Movie {
+	if criteria != nil {
+		CurrCriteria = *criteria
+	}
+
+	if sortInfo != nil {
+		CurrentSorting = *sortInfo
+	}
+
 	byId := make([]Movie, 0)
-	if criteria.Id != nil {
+	if CurrCriteria.Id != nil {
 		seen := make(map[int]bool)
-		for _, id := range criteria.Id {
+		for _, id := range CurrCriteria.Id {
 			if _, alreadyAdded := seen[id]; alreadyAdded {
 				continue
 			}
-			if movie, exists := movies.MoviesMap[id]; exists {
+			if movie, exists := currMovies.MoviesMap[id]; exists {
 				byId = append(byId, *movie)
 			}
 			seen[id] = true
 		}
 	} else {
-		for _, movie := range movies.Movies {
+		for _, movie := range currMovies.Movies {
 			byId = append(byId, *movie)
 		}
 	}
 
 	byTitle := make([]Movie, 0)
-	if criteria.Title != "" {
+	if CurrCriteria.Title != "" {
 		for _, movie := range byId {
-			if strings.Contains(strings.ToLower(movie.Title), strings.ToLower(criteria.Title)) {
+			if strings.Contains(strings.ToLower(movie.Title), strings.ToLower(CurrCriteria.Title)) {
 				byTitle = append(byTitle, movie)
 			}
 		}
@@ -137,13 +133,7 @@ func Find(criteria FindCriteria) []Movie {
 		byTitle = byId
 	}
 
-	sortInfo := &SortInfo{
-		SortedBy: MovieId,
-		Desc:     false,
-	}
-
-	sort.Sort(MovieSorter{SortInfo: *sortInfo, Movies: byTitle})
-	CurrentSorting = *sortInfo
+	sort.Sort(MovieSorter{SortInfo: CurrentSorting, Movies: byTitle})
 	return byTitle
 }
 
@@ -177,11 +167,4 @@ func DeleteById(id int) bool {
 	movies.Movies = append(movies.Movies[:remove], movies.Movies[remove+1:]...)
 	delete(movies.MoviesMap, id)
 	return true
-}
-
-// CurrentSorting is the current sorting information.
-// It is updated every time a new sorting is requested.
-var CurrentSorting = SortInfo{
-	SortedBy: MovieId,
-	Desc:     false,
 }

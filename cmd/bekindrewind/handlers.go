@@ -26,28 +26,6 @@ type MovieList struct {
 	Body     []ms.Movie
 }
 
-// allMoviesView is a handler function that returns the "movie-list" template with the list of all ms.
-// The ms are sorted by the field specified in the "sorted-by" query parameter.
-// The "desc" query parameter is used to specify the sorting order (true for descending, false for ascending).
-func allMoviesView(c echo.Context) error {
-
-	sorting := ms.SortInfo{
-		SortedBy: ms.StrToMF(c.QueryParam("sorted-by")),
-		Desc:     c.QueryParam("desc") == "true",
-	}
-
-	sortedByLabel, err := ms.MFToStr(sorting.SortedBy)
-	if err != nil {
-		return err
-	}
-
-	return c.Render(200, "movie-list", MovieList{
-		SortedBy: sortedByLabel,
-		Desc:     sorting.Desc,
-		Body:     ms.FindAll(&sorting),
-	})
-}
-
 // sortMovies is a handler function that returns the "movie-list" template with the list of ms sorted by the given field.
 // The field to sort by is specified in the "by" query parameter.
 func sortMovies(c echo.Context) error {
@@ -66,7 +44,7 @@ func sortMovies(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: movieFieldLabel,
 		Desc:     newSorting.Desc,
-		Body:     ms.FindAll(&newSorting),
+		Body:     ms.Find(nil, &newSorting),
 	})
 }
 
@@ -121,7 +99,7 @@ func getMovie(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     ms.Find(criteria),
+		Body:     ms.Find(&criteria, nil),
 	})
 }
 
