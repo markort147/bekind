@@ -1,0 +1,15 @@
+{{ define "movie" }}
+<div style="display: flex; flex-direction: column;">
+    <h1 class="title is-1">{{.Title}}</h1>
+    <div style="display: flex; flex-direction: row;">
+        <div class="box">
+            <h2 class="title is-2">Year</h2>
+            <p>{{.Year}}</p>
+        </div>
+        <div class="box">
+            <h2 class="title is-2">Rate</h2>
+            <p>{{.Rate}}</p>
+        </div>
+    </div>
+</div>
+{{ end }}

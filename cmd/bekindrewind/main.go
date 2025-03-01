@@ -4,12 +4,13 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/labstack/echo/v4"
 	ms "github.com/markort147/bekind/cmd/bekindrewind/movies"
 	"github.com/markort147/bekind/internal/echotmpl"
 	"github.com/markort147/bekind/internal/log"
 	"github.com/markort147/bekind/internal/ymlcfg"
-	"os"
 )
 
 //go:embed assets/*
@@ -71,10 +72,12 @@ func main() {
 			// movies list operations
 			e.GET("/views/movies/sort", sortMovies)
 			// single movie handlers
-			e.GET("/movie", getMovie)
+			e.GET("/movie/:id", getMovie)
 			e.POST("/movie", postMovie)
 			e.PUT("/movie/:id", putMovie)
 			e.DELETE("/movie/:id", deleteMovie)
+			// finders
+			e.POST("/find/movie", findMovie)
 			// form validators
 			e.POST("/validate/title", validateTitle)
 			e.POST("/validate/year", validateYear)

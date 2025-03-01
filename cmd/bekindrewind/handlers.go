@@ -1,11 +1,12 @@
 package main
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/labstack/echo/v4"
 	ms "github.com/markort147/bekind/cmd/bekindrewind/movies"
 	"github.com/markort147/bekind/internal/log"
-	"strconv"
-	"strings"
 )
 
 /*
@@ -72,13 +73,13 @@ func deleteMovie(c echo.Context) error {
 	return c.NoContent(200)
 }
 
-// getMovie is a handler function that returns the "movie-list" template with the list of ms that match the given ids.
+// findMovie is a handler function that returns the "movie-list" template with the list of ms that match the given ids.
 // The ids are specified by the "id" form value, which is a comma-separated list of movie ids.
-func getMovie(c echo.Context) error {
+func findMovie(c echo.Context) error {
 	criteria := ms.FindCriteria{}
 
 	// get ids
-	value := strings.ReplaceAll(c.QueryParam("id"), " ", "")
+	value := strings.ReplaceAll(c.FormValue("id"), " ", "")
 	stringIds := strings.FieldsFunc(value, func(r rune) bool { return r == ',' })
 	if len(stringIds) != 0 {
 		ids := make([]int, 0)
@@ -93,7 +94,7 @@ func getMovie(c echo.Context) error {
 	}
 
 	// get title
-	title := strings.ReplaceAll(c.QueryParam("title"), " ", "")
+	title := strings.ReplaceAll(c.FormValue("title"), " ", "")
 	criteria.Title = title
 
 	return c.Render(200, "movie-list", MovieList{
@@ -198,4 +199,18 @@ func validateTitle(c echo.Context) error {
 		Value: title,
 		Valid: valid,
 	})
+}
+
+func getMovie(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.NoContent(echo.ErrBadRequest.Code)
+	}
+
+	movie, err := ms.FindById(id)
+	if err != nil {
+		return c.NoContent(echo.ErrBadRequest.Code)
+	}
+
+	return c.Render(200, "movie", movie)
 }
