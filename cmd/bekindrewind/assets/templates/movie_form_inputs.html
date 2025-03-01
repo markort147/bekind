@@ -3,16 +3,16 @@
     <label for="movie_title" class="label">Title:</label>
     <input class="input verified-input {{if .Valid}} is-success {{ else }} is-danger {{ end }}" type="text" name="title"
            id="movie_title" hx-post="validate/title" hx-target="#title_input" hx-swap="outerHTML"
-           hx-trigger="input changed delay:100ms" value="{{- .Value -}}">
+           hx-trigger="input changed delay:400ms" value="{{- .Value -}}">
 </div>
 {{ end }}
 
 {{ define "year_input" }}
 <div id="year_input" class="field">
     <label for="movie_year" class="label">Year:</label>
-    <input class="input verified-input {{if .Valid}} is-success {{ else }} is-danger {{ end }}" type="text" name="year"
+    <input class="input verified-input {{if .Valid}} is-success {{ else }} is-danger {{ end }}" type="number" name="year"
            id="movie_year" hx-post="validate/year" hx-target="#year_input" hx-swap="outerHTML"
-           hx-trigger="input changed delay:100ms" value="{{- .Value -}}">
+           hx-trigger="input changed delay:400ms" value="{{- .Value -}}">
 </div>
 {{ end }}
 
@@ -21,6 +21,6 @@
     <label for="movie_rate" class="label">Rate:</label>
     <input class="input verified-input {{if .Valid}} is-success {{ else }} is-danger {{ end }}" type="number"
            name="rate" id="movie_rate" hx-post="validate/rate" hx-target="#rate_input" hx-swap="outerHTML"
-           hx-trigger="input changed delay:100ms" value="{{- .Value -}}">
+           hx-trigger="input changed delay:400ms" value="{{- .Value -}}">
 </div>
 {{ end }}

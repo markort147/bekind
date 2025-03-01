@@ -93,11 +93,15 @@ func findMovie(c echo.Context) error {
 				minRate = uint8(value)
 			}
 		}
-		if len(rates) == 2 {
-			value, err := strconv.Atoi(rates[1])
-			if err == nil && value <= 10 {
-				maxRate = uint8(value)
+		if strings.ContainsRune(rateRange, '-') {
+			if len(rates) == 2 {
+				value, err := strconv.Atoi(rates[1])
+				if err == nil && value <= 10 {
+					maxRate = uint8(value)
+				}
 			}
+		} else {
+			maxRate = minRate
 		}
 		criteria.Rate = []uint8{minRate, maxRate}
 	}
@@ -119,12 +123,12 @@ func postMovie(c echo.Context) error {
 		Year:  c.FormValue("year"),
 		Rate:  uint8(rate),
 	})
-
-	return c.Render(200, "movie-list", MovieList{
+	/*return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
 		Body:     ms.FindAll(nil),
-	})
+	})*/
+	return c.Render(200, "search_movie", nil)
 }
 
 // editMovieView is a handler function that returns the "edit_movie" template with the movie data to edit.
@@ -156,11 +160,12 @@ func putMovie(c echo.Context) error {
 		Year:  c.FormValue("year"),
 		Rate:  uint8(rate),
 	})
-	return c.Render(200, "movie-list", MovieList{
+	/*return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
 		Body:     ms.FindAll(nil),
-	})
+	})*/
+	return c.Render(200, "search_movie", nil)
 }
 
 // validateYear is a helper function that validates the year format.
