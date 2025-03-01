@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/labstack/echo/v4"
 	ms "github.com/markort147/bekind/cmd/bekindrewind/movies"
 	"github.com/markort147/bekind/internal/echotmpl"
 	"github.com/markort147/bekind/internal/log"
@@ -64,7 +63,7 @@ func main() {
 		FileSystem:    assetsFS,
 		LogOutputPath: logOutput,
 		LogLevel:      logLevel,
-		RoutesRegister: func(e *echo.Echo) {
+		RoutesRegister: func(e *echotmpl.Echo) {
 			// main views
 			e.GET("/views/movies", staticView("search_movie"))
 			e.GET("/views/add-movie", staticView("add_movie"))
@@ -83,7 +82,7 @@ func main() {
 			e.POST("/validate/year", validateYear)
 			e.POST("/validate/rate", validateRate)
 		},
-		CustomFuncs: map[string]any{
+		CustomFuncs: echotmpl.FuncMap{
 			"WrapStringValidation": WrapStringValidation,
 			"WrapUint8Validation":  WrapUint8Validation,
 		},

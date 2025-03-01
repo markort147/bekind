@@ -27,10 +27,13 @@ type Config struct {
 	FileSystem      fs.FS
 	IndexPath       string
 	TemplatesPath   string
-	RoutesRegister  func(e *echo.Echo)
+	RoutesRegister  func(e *Echo)
 	ShutdownSignals []os.Signal
-	CustomFuncs     map[string]any
+	CustomFuncs     FuncMap
 }
+
+type Echo = echo.Echo
+type FuncMap = template.FuncMap
 
 // StartServer initializes the echo server
 // and registers all the endpoints
