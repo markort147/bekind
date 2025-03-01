@@ -2,7 +2,7 @@
 <table id="movie_table" class="table is-striped is-narrow is-hoverable is-fullwidth">
     <thead>
         <tr>
-            <th style="cursor: pointer" hx-get="/views/movies/sort?by=id" hx-target="#movie_table">ID
+            <th style="cursor: pointer" hx-get="views/movies/sort?by=id" hx-target="#movie_table">ID
                 {{ if eq .SortedBy "Id" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}
             </th>
             <th style="cursor: pointer" hx-get="views/movies/sort?by=title" hx-target="#movie_table">Title {{ if eq
