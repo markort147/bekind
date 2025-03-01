@@ -1,4 +1,4 @@
-<html data-theme="dark">
+<html data-theme="light">
 
 <head>
     <title>Be Kind Rewind</title>
@@ -8,19 +8,39 @@
 </head>
 
 <body>
+<div class="container">
     <nav class="navbar is-info" role="navigation" aria-label="main navigation">
         <div style="display: flex; flex-direction: row;">
             <div class="navbar-item">
-                <button hx-get="views/movies" hx-target="#main-view"><span>Movie List</span></button>
+                <button hx-get="views/movies" hx-target="#main-view"><span>Movies</span></button>
             </div>
             <div class="navbar-item">
                 <button hx-get="views/add-movie" hx-target="#main-view">Add Movie</button>
             </div>
         </div>
     </nav>
-    <div id="main-view" class="box">
-        <h1 class="title is-1">Be Kind, Rewind!</h1>
-    </div>
+    <section id="main-view" class="section">
+        <div class="hero is-align-items-center">
+        <header class="hero-head title is-1">Be Kind, Rewind!</header>
+        <section class="hero-body section">
+            <p class="block"><strong>Be Kind, Rewind!</strong> is a simple movie database application.</p>
+            <p class="block">It is written in <strong>Go</strong> and uses the <strong>htmx</strong> library for
+                dynamic
+                content loading.</p>
+            <p class="block">Select a view from the navigation bar above and <strong>enjoy!</strong></p>
+        </section>
+        </div>
+    </section>
+    <footer class="footer mt-auto" style="padding: 2rem 1rem 2rem;">
+        <div class="content has-text-centered">
+            <p>
+                <strong>Be Kind, Rewind!</strong> by <a href="https://github.com/markort147">Marco Romano</a>.
+                The <a href="https://github.com/markort147/bekind">source code</a> is licensed
+                <a href="https://opensource.org/license/mit">MIT</a>.
+            </p>
+        </div>
+    </footer>
+</div>
 </body>
 
 <script>
@@ -45,7 +65,7 @@
                         anyDanger = true;
                     }
                 });
-                
+
                 verifiedButtons.forEach(button => {
                     if (anyDanger) {
                         button.setAttribute('disabled', 'disabled');
@@ -55,7 +75,7 @@
                 });
             });
 
-            observer.observe(input, { attributes: true, attributeFilter: ['class'] });
+            observer.observe(input, {attributes: true, attributeFilter: ['class']});
         });
     }
 

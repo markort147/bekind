@@ -91,8 +91,8 @@ func FindById(id int) (Movie, error) {
 }
 
 type FindCriteria struct {
-	Id    []int
 	Title string
+	Rate  []uint8
 }
 
 func Find(criteria *FindCriteria, sortInfo *SortInfo) []Movie {
@@ -104,37 +104,17 @@ func Find(criteria *FindCriteria, sortInfo *SortInfo) []Movie {
 		CurrentSorting = *sortInfo
 	}
 
-	byId := make([]Movie, 0)
-	if CurrCriteria.Id != nil {
-		seen := make(map[int]bool)
-		for _, id := range CurrCriteria.Id {
-			if _, alreadyAdded := seen[id]; alreadyAdded {
-				continue
-			}
-			if movie, exists := currMovies.MoviesMap[id]; exists {
-				byId = append(byId, *movie)
-			}
-			seen[id] = true
-		}
-	} else {
-		for _, movie := range currMovies.Movies {
-			byId = append(byId, *movie)
+	// filter
+	final := make([]Movie, 0)
+	for _, movie := range movies.Movies {
+		if (CurrCriteria.Title == "" || strings.Contains(strings.ToLower(movie.Title), strings.ToLower(CurrCriteria.Title))) &&
+			(CurrCriteria.Rate == nil || (CurrCriteria.Rate[0] <= movie.Rate && movie.Rate <= CurrCriteria.Rate[1])) {
+			final = append(final, *movie)
 		}
 	}
 
-	byTitle := make([]Movie, 0)
-	if CurrCriteria.Title != "" {
-		for _, movie := range byId {
-			if strings.Contains(strings.ToLower(movie.Title), strings.ToLower(CurrCriteria.Title)) {
-				byTitle = append(byTitle, movie)
-			}
-		}
-	} else {
-		byTitle = byId
-	}
-
-	sort.Sort(MovieSorter{SortInfo: CurrentSorting, Movies: byTitle})
-	return byTitle
+	sort.Sort(MovieSorter{SortInfo: CurrentSorting, Movies: final})
+	return final
 }
 
 // Save adds the given movie to the collection

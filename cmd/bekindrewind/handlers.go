@@ -78,24 +78,29 @@ func deleteMovie(c echo.Context) error {
 func findMovie(c echo.Context) error {
 	criteria := ms.FindCriteria{}
 
-	// get ids
-	value := strings.ReplaceAll(c.FormValue("id"), " ", "")
-	stringIds := strings.FieldsFunc(value, func(r rune) bool { return r == ',' })
-	if len(stringIds) != 0 {
-		ids := make([]int, 0)
-		for _, stringId := range stringIds {
-			id, err := strconv.Atoi(stringId)
-			if err != nil {
-				continue
-			}
-			ids = append(ids, id)
-		}
-		criteria.Id = ids
-	}
+	// title
+	criteria.Title = strings.ReplaceAll(c.FormValue("title"), " ", "")
 
-	// get title
-	title := strings.ReplaceAll(c.FormValue("title"), " ", "")
-	criteria.Title = title
+	// rate range
+	rateRange := strings.ReplaceAll(c.FormValue("rate"), " ", "")
+	if rateRange != "" {
+		var minRate uint8 = 0
+		var maxRate uint8 = 10
+		rates := strings.Split(rateRange, "-")
+		if len(rates) > 0 {
+			value, err := strconv.Atoi(rates[0])
+			if err == nil && value >= 0 {
+				minRate = uint8(value)
+			}
+		}
+		if len(rates) == 2 {
+			value, err := strconv.Atoi(rates[1])
+			if err == nil && value <= 10 {
+				maxRate = uint8(value)
+			}
+		}
+		criteria.Rate = []uint8{minRate, maxRate}
+	}
 
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
