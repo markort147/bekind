@@ -97,23 +97,31 @@ func deleteMovie(c echo.Context) error {
 // getMovie is a handler function that returns the "movie-list" template with the list of ms that match the given ids.
 // The ids are specified by the "id" form value, which is a comma-separated list of movie ids.
 func getMovie(c echo.Context) error {
-	value := strings.ReplaceAll(c.FormValue("id"), " ", "")
+	criteria := ms.FindCriteria{}
+
+	// get ids
+	value := strings.ReplaceAll(c.QueryParam("id"), " ", "")
 	stringIds := strings.FieldsFunc(value, func(r rune) bool { return r == ',' })
-
-	ids := make([]int, 0)
-	for _, stringId := range stringIds {
-		id, err := strconv.Atoi(stringId)
-		if err != nil {
-			continue
+	if len(stringIds) != 0 {
+		ids := make([]int, 0)
+		for _, stringId := range stringIds {
+			id, err := strconv.Atoi(stringId)
+			if err != nil {
+				continue
+			}
+			ids = append(ids, id)
 		}
-
-		ids = append(ids, id)
+		criteria.Id = ids
 	}
+
+	// get title
+	title := strings.ReplaceAll(c.QueryParam("title"), " ", "")
+	criteria.Title = title
 
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     ms.FindByIds(ids, nil),
+		Body:     ms.Find(criteria),
 	})
 }
 
@@ -121,10 +129,11 @@ func getMovie(c echo.Context) error {
 // The movie data is specified in the form data of the request.
 // The function returns the "movie-list" template with the updated list of ms.
 func postMovie(c echo.Context) error {
+	rate, _ := strconv.Atoi(c.FormValue("rate"))
 	ms.Save(ms.Movie{
-		Title:    c.FormValue("title"),
-		Year:     c.FormValue("year"),
-		Director: c.FormValue("director"),
+		Title: c.FormValue("title"),
+		Year:  c.FormValue("year"),
+		Rate:  uint8(rate),
 	})
 
 	return c.Render(200, "movie-list", MovieList{
@@ -157,10 +166,11 @@ func editMovieView(c echo.Context) error {
 // The function returns the "movie-list" template with the updated list of ms.
 func putMovie(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
+	rate, _ := strconv.Atoi(c.FormValue("rate"))
 	ms.Update(id, ms.Movie{
-		Title:    c.FormValue("title"),
-		Year:     c.FormValue("year"),
-		Director: c.FormValue("director"),
+		Title: c.FormValue("title"),
+		Year:  c.FormValue("year"),
+		Rate:  uint8(rate),
 	})
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
@@ -172,24 +182,42 @@ func putMovie(c echo.Context) error {
 // validateYear is a helper function that validates the year format.
 func validateYear(c echo.Context) error {
 	year := c.FormValue("year")
-
-	valid := true
-
-	if len(year) != 4 {
-		valid = false
-	}
-
 	value, err := strconv.Atoi(year)
-	if err != nil {
-		valid = false
-	}
+	valid := err == nil && value >= 1900 && value <= 9999
 
-	if value < 1900 {
-		valid = false
-	}
+	return c.Render(200, "year_input", struct {
+		Value string
+		Valid bool
+	}{
+		Value: year,
+		Valid: valid,
+	})
+}
 
-	return c.Render(200, "year_input", YearValidation{
-		Year:  year,
+// validateRate is a helper function that validates the rate format.
+func validateRate(c echo.Context) error {
+	rate, err := strconv.Atoi(c.FormValue("rate"))
+	valid := err == nil && rate <= 10 && rate >= 0
+
+	return c.Render(200, "rate_input", struct {
+		Value int
+		Valid bool
+	}{
+		Value: rate,
+		Valid: valid,
+	})
+}
+
+// validateTitle is a helper function that validates the title format.
+func validateTitle(c echo.Context) error {
+	title := c.FormValue("title")
+	valid := len(title) > 0
+
+	return c.Render(200, "title_input", struct {
+		Value string
+		Valid bool
+	}{
+		Value: title,
 		Valid: valid,
 	})
 }

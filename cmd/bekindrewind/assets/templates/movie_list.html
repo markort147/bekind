@@ -2,15 +2,15 @@
 <table id="movie_table" class="table is-striped is-narrow is-hoverable is-fullwidth">
     <thead>
         <tr>
-            <th style="cursor: pointer" hx-get="/views/movies/sort?by=id" hx-target="#movie_table">id
+            <th style="cursor: pointer" hx-get="/views/movies/sort?by=id" hx-target="#movie_table">ID
                 {{ if eq .SortedBy "Id" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}
             </th>
             <th style="cursor: pointer" hx-get="views/movies/sort?by=title" hx-target="#movie_table">Title {{ if eq
                 .SortedBy "Title" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
             <th style="cursor: pointer" hx-get="views/movies/sort?by=year" hx-target="#movie_table">Year {{ if eq
                 .SortedBy "Year" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
-            <th style="cursor: pointer" hx-get="views/movies/sort?by=director" hx-target="#movie_table">Director {{ if
-                eq .SortedBy "Director" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
+            <th style="cursor: pointer" hx-get="views/movies/sort?by=rate" hx-target="#movie_table">Rate {{ if
+                eq .SortedBy "Rate" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}</th>
             <th></th>
             <th></th>
         </tr>
@@ -21,7 +21,7 @@
             <td>{{ .Id }}</td>
             <td>{{ .Title }}</td>
             <td>{{ .Year }}</td>
-            <td>{{ .Director }}</td>
+            <td>{{ .Rate }}</td>
             <td>
                 <button class="button is-info is-dark" type="button" hx-get="views/edit-movie/{{ .Id }}"
                     hx-target="#main-view">

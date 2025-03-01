@@ -16,7 +16,7 @@ func TestGetMovieFieldLabel(t *testing.T) {
 		{MovieId, "Id", nil},
 		{MovieTitle, "Title", nil},
 		{MovieYear, "Year", nil},
-		{MovieDirector, "Director", nil},
+		{MovieRate, "Director", nil},
 		{MovieField(-1), "", ErrInvalidMovieField},
 	}
 
@@ -41,7 +41,7 @@ func TestParseMovieField(t *testing.T) {
 		{"Id", MovieId, nil},
 		{"Title", MovieTitle, nil},
 		{"Year", MovieYear, nil},
-		{"Director", MovieDirector, nil},
+		{"Director", MovieRate, nil},
 		{"invalid", -1, ErrInvalidMovieField},
 	}
 

@@ -1,9 +1,9 @@
 package movies
 
 import (
-	"sort"
-
 	"github.com/markort147/bekind/internal/log"
+	"sort"
+	"strings"
 )
 
 /*
@@ -35,10 +35,10 @@ func Init() {
 // FillForTests fills the in-memory storage with some mock data
 func FillForTests() {
 	mock := []Movie{
-		{Id: 3, Title: "Interstellar", Year: "2014", Director: "Christopher Nolan"},
-		{Id: 1, Title: "The Godfather", Year: "1972", Director: "Francis Ford Coppola"},
-		{Id: 2, Title: "Pulp Fiction", Year: "1994", Director: "Quentin Tarantino"},
-		{Id: 4, Title: "Fight Club", Year: "1999", Director: "David Fincher"},
+		{Id: 3, Title: "Interstellar", Year: "2014", Rate: 8},
+		{Id: 1, Title: "The Godfather", Year: "1972", Rate: 7},
+		{Id: 2, Title: "Pulp Fiction", Year: "1994", Rate: 9},
+		{Id: 4, Title: "Fight Club", Year: "1999", Rate: 9},
 	}
 	for _, m := range mock {
 		movies.addMovie(m)
@@ -102,6 +102,51 @@ func FindByIds(ids []int, sortInfo *SortInfo) []Movie {
 	return filteredMovies
 }
 
+type FindCriteria struct {
+	Id    []int
+	Title string
+}
+
+func Find(criteria FindCriteria) []Movie {
+	byId := make([]Movie, 0)
+	if criteria.Id != nil {
+		seen := make(map[int]bool)
+		for _, id := range criteria.Id {
+			if _, alreadyAdded := seen[id]; alreadyAdded {
+				continue
+			}
+			if movie, exists := movies.MoviesMap[id]; exists {
+				byId = append(byId, *movie)
+			}
+			seen[id] = true
+		}
+	} else {
+		for _, movie := range movies.Movies {
+			byId = append(byId, *movie)
+		}
+	}
+
+	byTitle := make([]Movie, 0)
+	if criteria.Title != "" {
+		for _, movie := range byId {
+			if strings.Contains(strings.ToLower(movie.Title), strings.ToLower(criteria.Title)) {
+				byTitle = append(byTitle, movie)
+			}
+		}
+	} else {
+		byTitle = byId
+	}
+
+	sortInfo := &SortInfo{
+		SortedBy: MovieId,
+		Desc:     false,
+	}
+
+	sort.Sort(MovieSorter{SortInfo: *sortInfo, Movies: byTitle})
+	CurrentSorting = *sortInfo
+	return byTitle
+}
+
 // Save adds the given movie to the collection
 func Save(m Movie) Movie {
 	return movies.addMovie(m)
@@ -110,7 +155,7 @@ func Save(m Movie) Movie {
 // Update updates the movie with the given id
 func Update(id int, new Movie) {
 	old := movies.MoviesMap[id]
-	old.Director = new.Director
+	old.Rate = new.Rate
 	old.Title = new.Title
 	old.Year = new.Year
 }

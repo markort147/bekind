@@ -1,19 +1,12 @@
 {{ define "add_movie" }}
 <div id="add_movie_form_container">
     <form hx-post="movie" hx-target="#main-view" style="display: flex; flex-direction: column;">
-        <div class="field">
-            <label for="add_movie_title" class="label">Title:</label>
-            <input class="input" type="text" name="title" id="add_movie_title"></input>
-        </div>
-        <div class="field">
-            <label for="add_movie_year" class="label">Year:</label>
-            {{ template "year_input" (WrapYearValidation "" false) }}
-        </div>
-        <div class="field">
-            <label for="add_movie_director" class="label">Director:</label>
-            <input class="input" type="text" name="director" id="add_movie_director"></input>
-        </div>
-        <button type="submit" class="button verified-button is-primary is-light is-small" id="add_movie_button">Confirm</button>
+        {{ template "title_input" (WrapStringValidation "" false) }}
+        {{ template "year_input" (WrapStringValidation "" false) }}
+        {{ template "rate_input" (WrapUint8Validation 0 true) }}
+        <button type="submit" class="button verified-button is-primary is-light is-small" id="add_movie_button">
+            Confirm
+        </button>
     </form>
 </div>
 {{ end }}

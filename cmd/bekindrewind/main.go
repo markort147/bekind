@@ -77,10 +77,13 @@ func main() {
 			e.PUT("/movie/:id", putMovie)
 			e.DELETE("/movie/:id", deleteMovie)
 			// form validators
+			e.POST("/validate/title", validateTitle)
 			e.POST("/validate/year", validateYear)
+			e.POST("/validate/rate", validateRate)
 		},
 		CustomFuncs: map[string]any{
-			"WrapYearValidation": WrapYearValidation,
+			"WrapStringValidation": WrapStringValidation,
+			"WrapUint8Validation":  WrapUint8Validation,
 		},
 	})
 	if err != nil {

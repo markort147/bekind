@@ -13,19 +13,18 @@ This file contains the definition of the Movie type and related functions.
 
 // Movie represents a movie entity.
 type Movie struct {
-	Id       int
-	Title    string
-	Year     string
-	Director string
+	Id    int
+	Title string
+	Year  string
+	Rate  uint8
 }
 
 // newMovie creates a new Movie instance.
-func newMovie(title, year, director string) Movie {
+func newMovie(title, year string, rate uint8) Movie {
 	return Movie{
-		Id:       -1,
-		Title:    title,
-		Year:     year,
-		Director: director,
+		Title: title,
+		Year:  year,
+		Rate:  rate,
 	}
 }
 
@@ -36,7 +35,7 @@ const (
 	MovieId MovieField = iota
 	MovieTitle
 	MovieYear
-	MovieDirector
+	MovieRate
 )
 
 var ErrInvalidMovieField = errors.New("invalid MovieField value")
@@ -50,8 +49,8 @@ func MFToStr(field MovieField) (string, error) {
 		return "Title", nil
 	case MovieYear:
 		return "Year", nil
-	case MovieDirector:
-		return "Director", nil
+	case MovieRate:
+		return "Rate", nil
 	}
 	return "", ErrInvalidMovieField
 }
@@ -64,8 +63,8 @@ func StrToMF(label string) MovieField {
 		return MovieTitle
 	case "year":
 		return MovieYear
-	case "director":
-		return MovieDirector
+	case "rate":
+		return MovieRate
 	}
 	return MovieId
 }

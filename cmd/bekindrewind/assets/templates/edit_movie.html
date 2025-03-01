@@ -1,18 +1,9 @@
 {{ define "edit_movie" }}
 <div id="edit_movie_form_container">
     <form hx-put="movie/{{ .Id }}" hx-target="#main-view" style="display: flex; flex-direction: column;">
-        <div class="field">
-            <label for="add_movie_title" class="label">Title:</label>
-            <input class="input" type="text" name="title" id="add_movie_title" value="{{ .Title }}"></input>
-        </div>
-        <div class="field">
-            <label for="add_movie_year" class="label">Year:</label>      
-            {{ template "year_input" (WrapYearValidation .Year true) }}
-        </div>
-        <div class="field">
-            <label for="add_movie_director" class="label">Director:</label>
-            <input class="input" type="text" name="director" id="add_movie_director" value="{{ .Director }}"></input>
-        </div>
+        {{ template "title_input" (WrapStringValidation .Title true) }}
+        {{ template "year_input" (WrapStringValidation .Year true) }}
+        {{ template "rate_input" (WrapUint8Validation .Rate true) }}
         <button type="submit" class="button verified-button is-primary is-light is-small">Confirm</button>
     </form>
 </div>

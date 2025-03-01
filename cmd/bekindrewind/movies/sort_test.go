@@ -15,14 +15,14 @@ func TestMovieSorter(t *testing.T) {
 		desc   bool
 		output []int // Expected order of IDs
 	}{
-		{MovieId, false, []int{1, 2, 3, 4}},       // Sort by ID Ascending
-		{MovieId, true, []int{4, 3, 2, 1}},        // Sort by ID Descending
-		{MovieTitle, false, []int{4, 3, 2, 1}},    // Sort by Title Ascending
-		{MovieTitle, true, []int{1, 2, 3, 4}},     // Sort by Title Descending
-		{MovieYear, false, []int{1, 2, 4, 3}},     // Sort by Year Ascending
-		{MovieYear, true, []int{3, 4, 2, 1}},      // Sort by Year Descending
-		{MovieDirector, false, []int{3, 4, 1, 2}}, // Sort by Director Ascending
-		{MovieDirector, true, []int{2, 1, 4, 3}},  // Sort by Director Descending
+		{MovieId, false, []int{1, 2, 3, 4}},    // Sort by ID Ascending
+		{MovieId, true, []int{4, 3, 2, 1}},     // Sort by ID Descending
+		{MovieTitle, false, []int{4, 3, 2, 1}}, // Sort by Title Ascending
+		{MovieTitle, true, []int{1, 2, 3, 4}},  // Sort by Title Descending
+		{MovieYear, false, []int{1, 2, 4, 3}},  // Sort by Year Ascending
+		{MovieYear, true, []int{3, 4, 2, 1}},   // Sort by Year Descending
+		{MovieRate, false, []int{3, 4, 1, 2}},  // Sort by Director Ascending
+		{MovieRate, true, []int{2, 1, 4, 3}},   // Sort by Director Descending
 	}
 
 	for _, tc := range testCases {

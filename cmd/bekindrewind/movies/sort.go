@@ -46,9 +46,9 @@ func movieSortingFunc(sortedBy MovieField) func(m1, m2 Movie) int {
 		return func(m1, m2 Movie) int {
 			return strings.Compare(m1.Title, m2.Title)
 		}
-	case MovieDirector:
+	case MovieRate:
 		return func(m1, m2 Movie) int {
-			return strings.Compare(m1.Director, m2.Director)
+			return int(m1.Rate) - int(m2.Rate)
 		}
 	case MovieYear:
 		return func(m1, m2 Movie) int {

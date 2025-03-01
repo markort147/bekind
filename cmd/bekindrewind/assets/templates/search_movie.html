@@ -1,9 +1,10 @@
 {{ define "search_movie" }}
 <div style="display: flex; flex-direction: column;" id="search_movie_form_container">
-    <form hx-get="movie" hx-target="#search_movie_list_container">
+    <form hx-get="movie" hx-target="#search_movie_list_container" hx-trigger="load, input delay:100ms">
         <label for="search_movie_input_id">ID:</label>
-        <input type="text" name="id" id="search_movie_input_id"></input>
-        <button type="submit" class="button is-info is-light is-small">SEARCH</button>
+        <input type="text" name="id" id="search_movie_input_id">
+        <label for="search_movie_input_title">Title:</label>
+        <input type="text" name="title" id="search_movie_input_title">
     </form>
     <div id="search_movie_list_container"></div>
 </div>
