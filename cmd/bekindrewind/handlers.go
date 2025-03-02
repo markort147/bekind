@@ -170,44 +170,79 @@ func putMovie(c echo.Context) error {
 
 // validateYear is a helper function that validates the year format.
 func validateYear(c echo.Context) error {
-	year := c.FormValue("year")
-	value, err := strconv.Atoi(year)
-	valid := err == nil && value >= 1900 && value <= 9999
+	var message string
+	valid := true
+	value := c.FormValue("year")
+
+	if value == "" {
+		valid = false
+		message = "It cannot be empty."
+	} else {
+		year, err := strconv.Atoi(value)
+		if err != nil || year < 0 {
+			valid = false
+			message = "Invalid year format."
+		}
+	}
 
 	return c.Render(200, "year_input", struct {
-		Value string
-		Valid bool
+		Value   string
+		Valid   bool
+		Message string
 	}{
-		Value: year,
-		Valid: valid,
+		Value:   value,
+		Valid:   valid,
+		Message: message,
 	})
 }
 
 // validateRate is a helper function that validates the rate format.
 func validateRate(c echo.Context) error {
-	rate, err := strconv.Atoi(c.FormValue("rate"))
-	valid := err == nil && rate <= 10 && rate >= 0
+	var message string
+	valid := true
+	value := c.FormValue("rate")
+
+	if value == "" {
+		valid = false
+		message = "It cannot be empty."
+	} else {
+		rate, err := strconv.Atoi(value)
+		if err != nil || rate < 0 || rate > 10 {
+			valid = false
+			message = "Invalid rate format."
+		}
+	}
 
 	return c.Render(200, "rate_input", struct {
-		Value int
-		Valid bool
+		Value   string
+		Valid   bool
+		Message string
 	}{
-		Value: rate,
-		Valid: valid,
+		Value:   value,
+		Valid:   valid,
+		Message: message,
 	})
 }
 
 // validateTitle is a helper function that validates the title format.
 func validateTitle(c echo.Context) error {
+	var message string
 	title := c.FormValue("title")
-	valid := len(title) > 0
+	valid := true
+
+	if strings.ReplaceAll(title, " ", "") == "" {
+		valid = false
+		message = "It cannot be empty."
+	}
 
 	return c.Render(200, "title_input", struct {
-		Value string
-		Valid bool
+		Value   string
+		Valid   bool
+		Message string
 	}{
-		Value: title,
-		Valid: valid,
+		Value:   title,
+		Valid:   valid,
+		Message: message,
 	})
 }
 

@@ -1,12 +1,15 @@
 {{ define "add_movie" }}
-<div id="add_movie_form_container">
-    <form hx-post="movie" hx-target="#main-view" style="display: flex; flex-direction: column;">
-        {{ template "title_input" (WrapStringValidation "" false) }}
-        {{ template "year_input" (WrapStringValidation "" false) }}
-        {{ template "rate_input" (WrapUint8Validation 0 true) }}
-        <button type="submit" class="button verified-button is-primary is-light is-small" id="add_movie_button">
-            Confirm
-        </button>
-    </form>
+<div class="hero" id="add_movie_form_container">
+    <header class="hero-head title is-1 has-text-centered">Add a new movie</header>
+    <div class="hero-body">
+        <form hx-post="movie" hx-target="#main-view" style="display: flex; flex-direction: column;">
+            {{ template "title_input" (WrapStringValidation "" false "It cannot be empty.") }}
+            {{ template "year_input" (WrapStringValidation "" false "It cannot be empty.") }}
+            {{ template "rate_input" (WrapStringValidation "" false "It cannot be empty.") }}
+            <button type="submit" class="button verified-button is-primary is-small" id="add_movie_button">
+                Submit
+            </button>
+        </form>
+    </div>
 </div>
 {{ end }}

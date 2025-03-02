@@ -2,36 +2,43 @@
 <table id="movie_table" class="table is-striped is-narrow is-hoverable is-fullwidth">
     <thead>
     <tr>
-        <th style="cursor: pointer" hx-get="views/movies/sort?by=id" hx-target="#movie_table">
+        <th style="cursor: pointer" hx-put="views/movies/sort?by=id" hx-target="#movie_table">
             ID {{ if eq .SortedBy "Id" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}
         </th>
-        <th style="cursor: pointer" hx-get="views/movies/sort?by=title" hx-target="#movie_table">
+        <th style="cursor: pointer" hx-put="views/movies/sort?by=title" hx-target="#movie_table">
             Title {{ if eq .SortedBy "Title" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}
         </th>
-        <th style="cursor: pointer" hx-get="views/movies/sort?by=year" hx-target="#movie_table">
+        <th style="cursor: pointer" hx-put="views/movies/sort?by=year" hx-target="#movie_table">
             Year {{ if eq .SortedBy "Year" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}
         </th>
-        <th style="cursor: pointer" hx-get="views/movies/sort?by=rate" hx-target="#movie_table">
+        <th style="cursor: pointer" hx-put="views/movies/sort?by=rate" hx-target="#movie_table">
             Rate {{ if eq .SortedBy "Rate" }} {{ if .Desc }} ↑ {{ else }} ↓ {{ end }} {{ end }}
         </th>
-        <th>Actions</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
     {{ range .Body }}
     <tr id="movie_row_{{ .Id }}">
         <td>{{ .Id }}</td>
-        <td style="cursor: pointer" hx-get="movie/{{.Id}}" hx-target="#main-view"><b>{{ .Title }}</b></td>
+        <td>{{ .Title }}</td>
         <td>{{ .Year }}</td>
         <td>{{ .Rate }}</td>
         <td>
-            <button class="button is-info" type="button" hx-get="views/edit-movie/{{ .Id }}"
-                    hx-target="#main-view">
-                Edit
+            <button type="button" hx-get="movie/{{.Id}}" hx-target="#main-view">
+                <span class="icon has-text-info">
+                    <i class="fas fa-info"></i>
+                </span>
             </button>
-            <button class="button is-error" type="button" hx-delete="movie/{{ .Id }}"
-                    hx-target="#movie_row_{{ .Id }}">
-                Delete
+            <button type="button" hx-get="views/edit-movie/{{ .Id }}" hx-target="#main-view">
+                <span class="icon has-text-warning">
+                    <i class="fas fa-edit"></i>
+                </span>
+            </button>
+            <button type="button" hx-delete="movie/{{ .Id }}" hx-target="#movie_row_{{ .Id }}" hx-confirm="Are you sure you want to delete {{ .Title }}?">
+                <span class="icon has-text-danger">
+                    <i class="fas fa-trash-alt"></i>
+                </span>
             </button>
         </td>
     </tr>

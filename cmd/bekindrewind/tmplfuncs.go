@@ -1,25 +1,29 @@
 package main
 
 type StringValidation struct {
-	Value string
-	Valid bool
+	Value   string
+	Valid   bool
+	Message string
 }
 
-func WrapStringValidation(value string, valid bool) StringValidation {
+func WrapStringValidation(value string, valid bool, message string) StringValidation {
 	return StringValidation{
-		Value: value,
-		Valid: valid,
+		Value:   value,
+		Valid:   valid,
+		Message: message,
 	}
 }
 
 type Uint8Validation struct {
-	Value uint8
-	Valid bool
+	Value   uint8
+	Valid   bool
+	Message string
 }
 
-func WrapUint8Validation(value uint8, valid bool) Uint8Validation {
+func WrapUint8Validation(value uint8, valid bool, message string) Uint8Validation {
 	return Uint8Validation{
-		Value: value,
-		Valid: valid,
+		Value:   value,
+		Valid:   valid,
+		Message: message,
 	}
 }

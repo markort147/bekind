@@ -64,20 +64,18 @@ func main() {
 		LogOutputPath: logOutput,
 		LogLevel:      logLevel,
 		RoutesRegister: func(e *echotmpl.Echo) {
-			// main views
+			// views
 			e.GET("/views/movies", staticView("search_movie"))
+			e.PUT("/views/movies/filter", findMovie)
+			e.PUT("/views/movies/sort", sortMovies)
 			e.GET("/views/add-movie", staticView("add_movie"))
 			e.GET("/views/edit-movie/:id", editMovieView)
-			// movies list operations
-			e.GET("/views/movies/sort", sortMovies)
-			// single movie handlers
+			// movie
 			e.GET("/movie/:id", getMovie)
 			e.POST("/movie", postMovie)
 			e.PUT("/movie/:id", putMovie)
 			e.DELETE("/movie/:id", deleteMovie)
-			// finders
-			e.POST("/find/movie", findMovie)
-			// form validators
+			// validate
 			e.POST("/validate/title", validateTitle)
 			e.POST("/validate/year", validateYear)
 			e.POST("/validate/rate", validateRate)
