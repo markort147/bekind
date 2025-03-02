@@ -3,9 +3,9 @@
     <header class="hero-head title is-1 has-text-centered">Edit {{.Title}}</header>
     <div class="hero-body">
         <form hx-put="movie/{{ .Id }}" hx-target="#main-view" style="display: flex; flex-direction: column;">
-            {{ template "title_input" (WrapStringValidation .Title true "") }}
-            {{ template "year_input" (WrapUint16Validation .Year true "") }}
-            {{ template "rate_input" (WrapUint8Validation .Rate true "") }}
+            <div hx-post="validate/title" hx-trigger="load" hx-vals='{"title": "{{ .Title }}"}' hx-target="this" hx-swap="outerHTML"></div>
+            <div hx-post="validate/year" hx-trigger="load" hx-vals='{"year": "{{ .Year }}"}' hx-target="this" hx-swap="outerHTML"></div>
+            <div hx-post="validate/rate" hx-trigger="load" hx-vals='{"rate": "{{ .Rate }}"}' hx-target="this" hx-swap="outerHTML"></div>
             <button type="submit" class="button verified-button is-primary is-small" id="add_movie_button">
                 Submit
             </button>

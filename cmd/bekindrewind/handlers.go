@@ -196,11 +196,6 @@ func putMovie(c echo.Context) error {
 		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
-	/*return c.Render(200, "movie-list", MovieList{
-		SortedBy: "id",
-		Desc:     false,
-		Body:     ms.FindAll(nil),
-	})*/
 	return c.Render(200, "movies", nil)
 }
 
@@ -221,11 +216,15 @@ func validateYear(c echo.Context) error {
 		}
 	}
 
-	return c.Render(200, "year_input", struct {
+	return c.Render(200, "movie_input", struct {
+		Name    string
+		Label   string
 		Value   string
 		Valid   bool
 		Message string
 	}{
+		Name:    "year",
+		Label:   "Year:",
 		Value:   value,
 		Valid:   valid,
 		Message: message,
@@ -249,11 +248,15 @@ func validateRate(c echo.Context) error {
 		}
 	}
 
-	return c.Render(200, "rate_input", struct {
+	return c.Render(200, "movie_input", struct {
+		Name    string
+		Label   string
 		Value   string
 		Valid   bool
 		Message string
 	}{
+		Name:    "rate",
+		Label:   "Rate:",
 		Value:   value,
 		Valid:   valid,
 		Message: message,
@@ -271,11 +274,15 @@ func validateTitle(c echo.Context) error {
 		message = "It cannot be empty."
 	}
 
-	return c.Render(200, "title_input", struct {
+	return c.Render(200, "movie_input", struct {
+		Name    string
+		Label   string
 		Value   string
 		Valid   bool
 		Message string
 	}{
+		Name:    "title",
+		Label:   "Title:",
 		Value:   title,
 		Valid:   valid,
 		Message: message,
@@ -293,7 +300,7 @@ func getMovieDetails(c echo.Context) error {
 		return c.NoContent(echo.ErrBadRequest.Code)
 	}
 
-	return c.Render(200, "movie", movie)
+	return c.Render(200, "movie_details", movie)
 }
 
 func getMovieRow(c echo.Context) error {

@@ -81,11 +81,6 @@ func main() {
 			e.POST("/validate/year", validateYear)
 			e.POST("/validate/rate", validateRate)
 		},
-		CustomFuncs: echotmpl.FuncMap{
-			"WrapStringValidation": WrapStringValidation,
-			"WrapUint8Validation":  WrapUint8Validation,
-			"WrapUint16Validation": WrapUint16Validation,
-		},
 	})
 	if err != nil {
 		log.Logger.Fatalf("Error starting server: %v", err)
