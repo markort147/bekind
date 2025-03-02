@@ -4,7 +4,7 @@
     <div class="hero-body">
         <form hx-put="movie/{{ .Id }}" hx-target="#main-view" style="display: flex; flex-direction: column;">
             {{ template "title_input" (WrapStringValidation .Title true "") }}
-            {{ template "year_input" (WrapStringValidation .Year true "") }}
+            {{ template "year_input" (WrapUint16Validation .Year true "") }}
             {{ template "rate_input" (WrapUint8Validation .Rate true "") }}
             <button type="submit" class="button verified-button is-primary is-small" id="add_movie_button">
                 Submit

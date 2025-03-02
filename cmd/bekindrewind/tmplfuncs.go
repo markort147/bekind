@@ -27,3 +27,17 @@ func WrapUint8Validation(value uint8, valid bool, message string) Uint8Validatio
 		Message: message,
 	}
 }
+
+type Uint16Validation struct {
+	Value   uint16
+	Valid   bool
+	Message string
+}
+
+func WrapUint16Validation(value uint16, valid bool, message string) Uint16Validation {
+	return Uint16Validation{
+		Value:   value,
+		Valid:   valid,
+		Message: message,
+	}
+}

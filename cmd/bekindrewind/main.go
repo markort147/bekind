@@ -84,6 +84,7 @@ func main() {
 		CustomFuncs: echotmpl.FuncMap{
 			"WrapStringValidation": WrapStringValidation,
 			"WrapUint8Validation":  WrapUint8Validation,
+			"WrapUint16Validation": WrapUint16Validation,
 		},
 	})
 	if err != nil {
