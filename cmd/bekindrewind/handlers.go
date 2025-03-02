@@ -163,7 +163,7 @@ func postMovie(c echo.Context) error {
 		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
-	return c.Render(200, "search_movie", nil)
+	return c.Render(200, "movies", nil)
 }
 
 // editMovieView is a handler function that returns the "edit_movie" template with the movie data to edit.
@@ -201,7 +201,7 @@ func putMovie(c echo.Context) error {
 		Desc:     false,
 		Body:     ms.FindAll(nil),
 	})*/
-	return c.Render(200, "search_movie", nil)
+	return c.Render(200, "movies", nil)
 }
 
 // validateYear is a helper function that validates the year format.
