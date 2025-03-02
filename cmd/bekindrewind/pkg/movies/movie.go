@@ -15,12 +15,12 @@ This file contains the definition of the Movie type and related functions.
 type Movie struct {
 	Id    int
 	Title string
-	Year  string
+	Year  uint16
 	Rate  uint8
 }
 
 // newMovie creates a new Movie instance.
-func newMovie(title, year string, rate uint8) Movie {
+func newMovie(title string, year uint16, rate uint8) Movie {
 	return Movie{
 		Title: title,
 		Year:  year,

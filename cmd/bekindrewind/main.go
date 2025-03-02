@@ -65,13 +65,14 @@ func main() {
 		LogLevel:      logLevel,
 		RoutesRegister: func(e *echotmpl.Echo) {
 			// views
-			e.GET("/views/movies", staticView("search_movie"))
+			e.GET("/views/movies", staticView("movies"))
 			e.PUT("/views/movies/filter", findMovie)
 			e.PUT("/views/movies/sort", sortMovies)
 			e.GET("/views/add-movie", staticView("add_movie"))
 			e.GET("/views/edit-movie/:id", editMovieView)
 			// movie
-			e.GET("/movie/:id", getMovie)
+			e.GET("/movie/:id/details", getMovieDetails)
+			e.GET("/movie/:id/row", getMovieRow)
 			e.POST("/movie", postMovie)
 			e.PUT("/movie/:id", putMovie)
 			e.DELETE("/movie/:id", deleteMovie)

@@ -52,7 +52,7 @@ func movieSortingFunc(sortedBy MovieField) func(m1, m2 Movie) int {
 		}
 	case MovieYear:
 		return func(m1, m2 Movie) int {
-			return strings.Compare(m1.Year, m2.Year)
+			return int(m1.Year) - int(m2.Year)
 		}
 	default:
 		panic(fmt.Errorf("unknown state: %d", sortedBy))

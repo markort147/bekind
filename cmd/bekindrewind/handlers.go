@@ -24,7 +24,7 @@ The body is rendered using the Go template engine.
 type MovieList struct {
 	SortedBy string
 	Desc     bool
-	Body     []movies.Movie
+	Body     []int
 }
 
 // sortMovies is a handler function that returns the "movie-list" template with the list of ms sorted by the given field.
@@ -42,10 +42,16 @@ func sortMovies(c echo.Context) error {
 		panic(err) // it should be impossible to get an error here
 	}
 
+	movieList := movies.Find(nil, &newSorting)
+	ids := make([]int, len(movieList))
+	for i := range len(movieList) {
+		ids[i] = movieList[i].Id
+	}
+
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: movieFieldLabel,
 		Desc:     newSorting.Desc,
-		Body:     movies.Find(nil, &newSorting),
+		Body:     ids,
 	})
 }
 
@@ -84,8 +90,8 @@ func findMovie(c echo.Context) error {
 	// rate range
 	rateRange := strings.ReplaceAll(c.FormValue("rate"), " ", "")
 	if rateRange != "" {
-		var minRate uint8 = 0
-		var maxRate uint8 = 10
+		minRate := uint8(0)
+		maxRate := uint8(10)
 		rates := strings.Split(rateRange, "-")
 		if len(rates) > 0 {
 			value, err := strconv.Atoi(rates[0])
@@ -106,10 +112,43 @@ func findMovie(c echo.Context) error {
 		criteria.Rate = []uint8{minRate, maxRate}
 	}
 
+	// year range
+	yearRange := strings.ReplaceAll(c.FormValue("year"), " ", "")
+	if yearRange != "" {
+		minYear := uint16(0)
+		maxYear := ^uint16(0)
+		years := strings.Split(yearRange, "-")
+		if len(years) > 0 {
+			value, err := strconv.Atoi(years[0])
+			if err == nil && value >= int(minYear) {
+				minYear = uint16(value)
+			}
+		}
+		if strings.ContainsRune(yearRange, '-') {
+			if len(years) == 2 {
+				value, err := strconv.Atoi(years[1])
+				if err == nil && value <= int(maxYear) {
+					maxYear = uint16(value)
+				}
+			}
+		} else {
+			maxYear = minYear
+		}
+		criteria.Year = []uint16{minYear, maxYear}
+	}
+
+	log.Logger.Debugf("findMovie. criteria: %+v", criteria)
+
+	movieList := movies.Find(&criteria, nil)
+	ids := make([]int, len(movieList))
+	for i := range len(movieList) {
+		ids[i] = movieList[i].Id
+	}
+
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     movies.Find(&criteria, nil),
+		Body:     ids,
 	})
 }
 
@@ -118,16 +157,12 @@ func findMovie(c echo.Context) error {
 // The function returns the "movie-list" template with the updated list of ms.
 func postMovie(c echo.Context) error {
 	rate, _ := strconv.Atoi(c.FormValue("rate"))
+	year, _ := strconv.Atoi(c.FormValue("year"))
 	movies.Save(movies.Movie{
 		Title: c.FormValue("title"),
-		Year:  c.FormValue("year"),
+		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
-	/*return c.Render(200, "movie-list", MovieList{
-		SortedBy: "id",
-		Desc:     false,
-		Body:     ms.FindAll(nil),
-	})*/
 	return c.Render(200, "search_movie", nil)
 }
 
@@ -155,9 +190,10 @@ func editMovieView(c echo.Context) error {
 func putMovie(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	rate, _ := strconv.Atoi(c.FormValue("rate"))
+	year, _ := strconv.Atoi(c.FormValue("year"))
 	movies.Update(id, movies.Movie{
 		Title: c.FormValue("title"),
-		Year:  c.FormValue("year"),
+		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
 	/*return c.Render(200, "movie-list", MovieList{
@@ -246,7 +282,7 @@ func validateTitle(c echo.Context) error {
 	})
 }
 
-func getMovie(c echo.Context) error {
+func getMovieDetails(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.NoContent(echo.ErrBadRequest.Code)
@@ -258,4 +294,18 @@ func getMovie(c echo.Context) error {
 	}
 
 	return c.Render(200, "movie", movie)
+}
+
+func getMovieRow(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.NoContent(echo.ErrBadRequest.Code)
+	}
+
+	movie, err := movies.FindById(id)
+	if err != nil {
+		return c.NoContent(echo.ErrBadRequest.Code)
+	}
+
+	return c.Render(200, "movie_row", movie)
 }
