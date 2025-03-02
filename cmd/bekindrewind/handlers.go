@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/markort147/bekind/cmd/bekindrewind/pkg/movies"
 	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	ms "github.com/markort147/bekind/cmd/bekindrewind/movies"
 	"github.com/markort147/bekind/internal/log"
 )
 
@@ -24,20 +24,20 @@ The body is rendered using the Go template engine.
 type MovieList struct {
 	SortedBy string
 	Desc     bool
-	Body     []ms.Movie
+	Body     []movies.Movie
 }
 
 // sortMovies is a handler function that returns the "movie-list" template with the list of ms sorted by the given field.
 // The field to sort by is specified in the "by" query parameter.
 func sortMovies(c echo.Context) error {
 
-	sortedBy := ms.StrToMF(c.QueryParam("by"))
-	newSorting := ms.SortInfo{
+	sortedBy := movies.StrToMF(c.QueryParam("by"))
+	newSorting := movies.SortInfo{
 		SortedBy: sortedBy,
-		Desc:     ms.CurrentSorting.SortedBy == sortedBy && !ms.CurrentSorting.Desc,
+		Desc:     movies.CurrentSorting.SortedBy == sortedBy && !movies.CurrentSorting.Desc,
 	}
 
-	movieFieldLabel, err := ms.MFToStr(newSorting.SortedBy)
+	movieFieldLabel, err := movies.MFToStr(newSorting.SortedBy)
 	if err != nil {
 		panic(err) // it should be impossible to get an error here
 	}
@@ -45,7 +45,7 @@ func sortMovies(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: movieFieldLabel,
 		Desc:     newSorting.Desc,
-		Body:     ms.Find(nil, &newSorting),
+		Body:     movies.Find(nil, &newSorting),
 	})
 }
 
@@ -66,7 +66,7 @@ func deleteMovie(c echo.Context) error {
 		return c.NoContent(echo.ErrBadRequest.Code)
 	}
 
-	deleted := ms.DeleteById(id)
+	deleted := movies.DeleteById(id)
 	if !deleted {
 		return c.NoContent(echo.ErrNotFound.Code)
 	}
@@ -76,7 +76,7 @@ func deleteMovie(c echo.Context) error {
 // findMovie is a handler function that returns the "movie-list" template with the list of ms that match the given ids.
 // The ids are specified by the "id" form value, which is a comma-separated list of movie ids.
 func findMovie(c echo.Context) error {
-	criteria := ms.FindCriteria{}
+	criteria := movies.FindCriteria{}
 
 	// title
 	criteria.Title = strings.ReplaceAll(c.FormValue("title"), " ", "")
@@ -109,7 +109,7 @@ func findMovie(c echo.Context) error {
 	return c.Render(200, "movie-list", MovieList{
 		SortedBy: "id",
 		Desc:     false,
-		Body:     ms.Find(&criteria, nil),
+		Body:     movies.Find(&criteria, nil),
 	})
 }
 
@@ -118,7 +118,7 @@ func findMovie(c echo.Context) error {
 // The function returns the "movie-list" template with the updated list of ms.
 func postMovie(c echo.Context) error {
 	rate, _ := strconv.Atoi(c.FormValue("rate"))
-	ms.Save(ms.Movie{
+	movies.Save(movies.Movie{
 		Title: c.FormValue("title"),
 		Year:  c.FormValue("year"),
 		Rate:  uint8(rate),
@@ -140,7 +140,7 @@ func editMovieView(c echo.Context) error {
 		log.Logger.Fatal(err)
 	}
 
-	movie, err := ms.FindById(id)
+	movie, err := movies.FindById(id)
 	if err != nil {
 		log.Logger.Fatal(err)
 	}
@@ -155,7 +155,7 @@ func editMovieView(c echo.Context) error {
 func putMovie(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	rate, _ := strconv.Atoi(c.FormValue("rate"))
-	ms.Update(id, ms.Movie{
+	movies.Update(id, movies.Movie{
 		Title: c.FormValue("title"),
 		Year:  c.FormValue("year"),
 		Rate:  uint8(rate),
@@ -252,7 +252,7 @@ func getMovie(c echo.Context) error {
 		return c.NoContent(echo.ErrBadRequest.Code)
 	}
 
-	movie, err := ms.FindById(id)
+	movie, err := movies.FindById(id)
 	if err != nil {
 		return c.NoContent(echo.ErrBadRequest.Code)
 	}

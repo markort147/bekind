@@ -4,9 +4,9 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	ms "github.com/markort147/bekind/cmd/bekindrewind/pkg/movies"
 	"os"
 
-	ms "github.com/markort147/bekind/cmd/bekindrewind/movies"
 	"github.com/markort147/bekind/internal/echotmpl"
 	"github.com/markort147/bekind/internal/log"
 	"github.com/markort147/bekind/internal/ymlcfg"
