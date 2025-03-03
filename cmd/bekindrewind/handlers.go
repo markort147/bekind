@@ -19,69 +19,26 @@ The body is rendered using the Go template engine.
 ===========================================================
 */
 
-// MovieList struct is used to pass data to the movie-list template.
-// The struct contains the list of ms to display, the field to sort by, and the sorting order.
-type MovieList struct {
-	SortedBy string
-	Desc     bool
-	Body     []int
+func moviesIds(c echo.Context, criteria *movies.FindCriteria, sorting *movies.SortInfo) error {
+	movieList := movies.Find(criteria, sorting)
+	ids := make([]int, len(movieList))
+	for i := range len(movieList) {
+		ids[i] = movieList[i].Id
+	}
+	return c.Render(200, "movie-list", ids)
 }
 
-// sortMovies is a handler function that returns the "movie-list" template with the list of ms sorted by the given field.
-// The field to sort by is specified in the "by" query parameter.
 func sortMovies(c echo.Context) error {
-
 	sortedBy := movies.StrToMF(c.QueryParam("by"))
 	newSorting := movies.SortInfo{
 		SortedBy: sortedBy,
 		Desc:     movies.CurrentSorting.SortedBy == sortedBy && !movies.CurrentSorting.Desc,
 	}
 
-	movieFieldLabel, err := movies.MFToStr(newSorting.SortedBy)
-	if err != nil {
-		panic(err) // it should be impossible to get an error here
-	}
-
-	movieList := movies.Find(nil, &newSorting)
-	ids := make([]int, len(movieList))
-	for i := range len(movieList) {
-		ids[i] = movieList[i].Id
-	}
-
-	return c.Render(200, "movie-list", MovieList{
-		SortedBy: movieFieldLabel,
-		Desc:     newSorting.Desc,
-		Body:     ids,
-	})
+	return moviesIds(c, nil, &newSorting)
 }
 
-// staticView is a handler function that returns a simple view with the given template name.
-// The function is used to render static HTML pages that do not require any data from the server.
-func staticView(templateName string) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		return c.Render(200, templateName, nil)
-	}
-}
-
-// deleteMovie is a handler function that deletes a movie from the database.
-// The id of the movie to delete is specified in the URL path.
-// The function returns a 200 status code if the movie was deleted successfully, or a 404 status code if the movie was not found.
-func deleteMovie(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.NoContent(echo.ErrBadRequest.Code)
-	}
-
-	deleted := movies.DeleteById(id)
-	if !deleted {
-		return c.NoContent(echo.ErrNotFound.Code)
-	}
-	return c.NoContent(200)
-}
-
-// findMovie is a handler function that returns the "movie-list" template with the list of ms that match the given ids.
-// The ids are specified by the "id" form value, which is a comma-separated list of movie ids.
-func findMovie(c echo.Context) error {
+func filterMovies(c echo.Context) error {
 	criteria := movies.FindCriteria{}
 
 	// title
@@ -137,24 +94,29 @@ func findMovie(c echo.Context) error {
 		criteria.Year = []uint16{minYear, maxYear}
 	}
 
-	log.Logger.Debugf("findMovie. criteria: %+v", criteria)
-
-	movieList := movies.Find(&criteria, nil)
-	ids := make([]int, len(movieList))
-	for i := range len(movieList) {
-		ids[i] = movieList[i].Id
-	}
-
-	return c.Render(200, "movie-list", MovieList{
-		SortedBy: "id",
-		Desc:     false,
-		Body:     ids,
-	})
+	log.Logger.Debugf("filterMovies. criteria: %+v", criteria)
+	return moviesIds(c, &criteria, nil)
 }
 
-// postMovie is a handler function that creates a new movie and adds it to the database.
-// The movie data is specified in the form data of the request.
-// The function returns the "movie-list" template with the updated list of ms.
+func staticView(templateName string) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.Render(200, templateName, nil)
+	}
+}
+
+func deleteMovie(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.NoContent(echo.ErrBadRequest.Code)
+	}
+
+	deleted := movies.DeleteById(id)
+	if !deleted {
+		return c.NoContent(echo.ErrNotFound.Code)
+	}
+	return c.NoContent(200)
+}
+
 func postMovie(c echo.Context) error {
 	rate, _ := strconv.Atoi(c.FormValue("rate"))
 	year, _ := strconv.Atoi(c.FormValue("year"))
@@ -166,8 +128,6 @@ func postMovie(c echo.Context) error {
 	return c.Render(200, "movies", nil)
 }
 
-// editMovieView is a handler function that returns the "edit_movie" template with the movie data to edit.
-// The id of the movie to edit is specified in the URL path.
 func editMovieView(c echo.Context) error {
 	strId := c.Param("id")
 	id, err := strconv.Atoi(strId)
@@ -183,11 +143,7 @@ func editMovieView(c echo.Context) error {
 	return c.Render(200, "edit_movie", movie)
 }
 
-// putMovie is a handler function that updates the movie data in the database.
-// The id of the movie to update is specified in the URL path.
-// The new movie data is specified in the form data of the request.
-// The function returns the "movie-list" template with the updated list of ms.
-func putMovie(c echo.Context) error {
+func updateMovie(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	rate, _ := strconv.Atoi(c.FormValue("rate"))
 	year, _ := strconv.Atoi(c.FormValue("year"))
@@ -199,7 +155,14 @@ func putMovie(c echo.Context) error {
 	return c.Render(200, "movies", nil)
 }
 
-// validateYear is a helper function that validates the year format.
+type fieldValidation struct {
+	Name    string
+	Label   string
+	Value   string
+	Valid   bool
+	Message string
+}
+
 func validateYear(c echo.Context) error {
 	var message string
 	valid := true
@@ -213,16 +176,13 @@ func validateYear(c echo.Context) error {
 		if err != nil || year < 0 {
 			valid = false
 			message = "Invalid year format."
+		} else if year > int(^uint16(0)) {
+			valid = false
+			message = "Year exceeds the maximum value of " + strconv.Itoa(int(^uint16(0)))
 		}
 	}
 
-	return c.Render(200, "movie_input", struct {
-		Name    string
-		Label   string
-		Value   string
-		Valid   bool
-		Message string
-	}{
+	return c.Render(200, "movie_input", fieldValidation{
 		Name:    "year",
 		Label:   "Year:",
 		Value:   value,
@@ -231,7 +191,6 @@ func validateYear(c echo.Context) error {
 	})
 }
 
-// validateRate is a helper function that validates the rate format.
 func validateRate(c echo.Context) error {
 	var message string
 	valid := true
@@ -248,13 +207,7 @@ func validateRate(c echo.Context) error {
 		}
 	}
 
-	return c.Render(200, "movie_input", struct {
-		Name    string
-		Label   string
-		Value   string
-		Valid   bool
-		Message string
-	}{
+	return c.Render(200, "movie_input", fieldValidation{
 		Name:    "rate",
 		Label:   "Rate:",
 		Value:   value,
@@ -263,7 +216,6 @@ func validateRate(c echo.Context) error {
 	})
 }
 
-// validateTitle is a helper function that validates the title format.
 func validateTitle(c echo.Context) error {
 	var message string
 	title := c.FormValue("title")
@@ -274,13 +226,7 @@ func validateTitle(c echo.Context) error {
 		message = "It cannot be empty."
 	}
 
-	return c.Render(200, "movie_input", struct {
-		Name    string
-		Label   string
-		Value   string
-		Valid   bool
-		Message string
-	}{
+	return c.Render(200, "movie_input", fieldValidation{
 		Name:    "title",
 		Label:   "Title:",
 		Value:   title,

@@ -67,7 +67,7 @@ func main() {
 		RoutesRegister: func(e *echotmpl.Echo) {
 			// views
 			e.GET("/views/movies", staticView("movies"))
-			e.PUT("/views/movies/filter", findMovie)
+			e.PUT("/views/movies/filter", filterMovies)
 			e.PUT("/views/movies/sort", sortMovies)
 			e.GET("/views/add-movie", staticView("add_movie"))
 			e.GET("/views/edit-movie/:id", editMovieView)
@@ -75,7 +75,7 @@ func main() {
 			e.GET("/movie/:id/details", getMovieDetails)
 			e.GET("/movie/:id/row", getMovieRow)
 			e.POST("/movie", postMovie)
-			e.PUT("/movie/:id", putMovie)
+			e.PUT("/movie/:id", updateMovie)
 			e.DELETE("/movie/:id", deleteMovie)
 			// validate
 			e.POST("/validate/title", validateTitle)
