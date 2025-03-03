@@ -3,7 +3,7 @@ package movies
 import (
 	"testing"
 
-	"github.com/markort147/bekind/internal/log"
+	"github.com/markort147/gopkg/log"
 )
 
 // Helper function to generate test movies

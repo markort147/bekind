@@ -1,11 +1,11 @@
 module github.com/markort147/bekind
 
-go 1.23.5
+go 1.24.0
 
 require (
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
-	gopkg.in/yaml.v3 v3.0.1
+	github.com/markort147/gopkg v0.0.1
 )
 
 require (
@@ -18,4 +18,5 @@ require (
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

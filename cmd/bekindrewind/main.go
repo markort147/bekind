@@ -7,9 +7,9 @@ import (
 	ms "github.com/markort147/bekind/cmd/bekindrewind/pkg/movies"
 	"os"
 
-	"github.com/markort147/bekind/internal/echotmpl"
-	"github.com/markort147/bekind/internal/log"
-	"github.com/markort147/bekind/internal/ymlcfg"
+	"github.com/markort147/gopkg/echotmpl"
+	"github.com/markort147/gopkg/log"
+	"github.com/markort147/gopkg/ymlcfg"
 )
 
 //go:embed assets/*
@@ -63,6 +63,7 @@ func main() {
 		FileSystem:    assetsFS,
 		LogOutputPath: logOutput,
 		LogLevel:      logLevel,
+		DefLogger:     log.Logger,
 		RoutesRegister: func(e *echotmpl.Echo) {
 			// views
 			e.GET("/views/movies", staticView("movies"))
