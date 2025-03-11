@@ -55,7 +55,8 @@ func main() {
 
 	// movies service initialization
 	ms.Init()
-	ms.FillForTests()
+	CSVToMovies(assetsFS, "assets/movies.csv")
+	//MoviesToCSV("movies2.csv")
 
 	// echo server initialization
 	wgServer, err := echotmpl.StartServer(&echotmpl.Config{

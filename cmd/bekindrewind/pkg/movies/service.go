@@ -26,8 +26,8 @@ func (e MovieServiceErr) Error() string {
 	return string(e)
 }
 
-// movies is the in-memory storage of movies
-var movies Movies
+// Data is the in-memory storage of Data
+var Data Movies
 
 var currMovies Movies
 
@@ -43,7 +43,7 @@ var CurrCriteria = FindCriteria{}
 
 // Init initializes the data with an empty list of movies
 func Init() {
-	movies = emptyMovies()
+	Data = emptyMovies()
 	currMovies = emptyMovies()
 }
 
@@ -95,7 +95,7 @@ func FillForTests() {
 		{Id: 43, Title: "Thor: Ragnarok", Year: 2017, Rate: 8},
 	}
 	for _, m := range mock {
-		movies.addMovie(m)
+		Data.addMovie(m)
 		currMovies.addMovie(m)
 	}
 }
@@ -109,8 +109,8 @@ func FindAll(sortInfo *SortInfo) []Movie {
 		}
 	}
 
-	sortedMovies := make([]Movie, len(movies.Movies))
-	for i, m := range movies.Movies {
+	sortedMovies := make([]Movie, len(Data.Movies))
+	for i, m := range Data.Movies {
 		sortedMovies[i] = *m
 	}
 
@@ -122,7 +122,7 @@ func FindAll(sortInfo *SortInfo) []Movie {
 
 // FindById returns the movie with the given id
 func FindById(id int) (Movie, error) {
-	movie, exists := movies.MoviesMap[id]
+	movie, exists := Data.MoviesMap[id]
 	if !exists {
 		return Movie{}, MovieNotFoundErr
 	}
@@ -148,7 +148,7 @@ func Find(criteria *FindCriteria, sortInfo *SortInfo) []Movie {
 
 	// filter
 	final := make([]Movie, 0)
-	for _, movie := range movies.Movies {
+	for _, movie := range Data.Movies {
 		if (CurrCriteria.Title == "" || strings.Contains(strings.ToLower(movie.Title), strings.ToLower(CurrCriteria.Title))) &&
 			(CurrCriteria.Rate == nil || (CurrCriteria.Rate[0] <= movie.Rate && movie.Rate <= CurrCriteria.Rate[1])) &&
 			(CurrCriteria.Year == nil || (CurrCriteria.Year[0] <= movie.Year && movie.Year <= CurrCriteria.Year[1])) {
@@ -162,12 +162,12 @@ func Find(criteria *FindCriteria, sortInfo *SortInfo) []Movie {
 
 // Save adds the given movie to the collection
 func Save(m Movie) Movie {
-	return movies.addMovie(m)
+	return Data.addMovie(m)
 }
 
 // Update updates the movie with the given id
 func Update(id int, new Movie) {
-	old := movies.MoviesMap[id]
+	old := Data.MoviesMap[id]
 	old.Rate = new.Rate
 	old.Title = new.Title
 	old.Year = new.Year
@@ -176,7 +176,7 @@ func Update(id int, new Movie) {
 // DeleteById deletes the movie with the given id
 func DeleteById(id int) bool {
 	remove := -1
-	for i, m := range movies.Movies {
+	for i, m := range Data.Movies {
 		if m.Id == id {
 			remove = i
 			break
@@ -187,7 +187,7 @@ func DeleteById(id int) bool {
 		return false
 	}
 
-	movies.Movies = append(movies.Movies[:remove], movies.Movies[remove+1:]...)
-	delete(movies.MoviesMap, id)
+	Data.Movies = append(Data.Movies[:remove], Data.Movies[remove+1:]...)
+	delete(Data.MoviesMap, id)
 	return true
 }

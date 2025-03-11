@@ -1,7 +1,5 @@
 package movies
 
-import "github.com/markort147/gopkg/log"
-
 /*
 === Movies ===
 This file contains the definition of the Movies struct and related functions.
@@ -27,7 +25,7 @@ func (ms *Movies) addMovie(m Movie) Movie {
 	ms.Movies = append(ms.Movies, &m)
 	ms.MoviesMap[ms.nextId] = &m
 	ms.nextId++
-	log.Logger.Infof("added movie %v", m)
+	//log.Logger.Infof("added movie %v", m)
 	return m
 }
 

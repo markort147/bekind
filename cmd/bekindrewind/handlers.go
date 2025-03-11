@@ -42,7 +42,8 @@ func filterMovies(c echo.Context) error {
 	criteria := movies.FindCriteria{}
 
 	// title
-	criteria.Title = strings.ReplaceAll(c.FormValue("title"), " ", "")
+	//criteria.Title = strings.ReplaceAll(c.FormValue("title"), " ", "")
+	criteria.Title = strings.TrimSpace(c.FormValue("title"))
 
 	// rate range
 	rateRange := strings.ReplaceAll(c.FormValue("rate"), " ", "")
