@@ -9,23 +9,13 @@ import (
 	"github.com/markort147/gopkg/log"
 )
 
-/*
-==================== HANDLER FUNCTIONS ====================
-These functions are used to handle the requests from the client.
-They are called by the router when a request is made to the server.
-The functions are responsible for processing the request and returning a response.
-The response consists of a status code and a body (HTML template).
-The body is rendered using the Go template engine.
-===========================================================
-*/
-
 func getMoviesView(c echo.Context) error {
-	return c.Render(200, "movie-list", movies.CurrView)
+	return c.Render(200, "movie-list", movies.GetView())
 }
 
 func updateMoviesViewSorting(c echo.Context) error {
-	movies.CurrView.Sort(c.QueryParam("by"))
-	return c.Render(200, "movie-list", movies.CurrView)
+	movies.SortView(c.QueryParam("by"))
+	return c.Render(200, "movie-list", movies.GetView())
 }
 
 func updateMoviesViewFilter(c echo.Context) error {
@@ -33,8 +23,8 @@ func updateMoviesViewFilter(c echo.Context) error {
 	criteria.Title = strings.TrimSpace(c.FormValue("title"))
 	criteria.Rate = strings.ReplaceAll(c.FormValue("rate"), " ", "")
 	criteria.Year = strings.ReplaceAll(c.FormValue("year"), " ", "")
-	movies.CurrView.Filter(criteria)
-	return c.Render(200, "movie-list", movies.CurrView)
+	movies.FilterView(criteria)
+	return c.Render(200, "movie-list", movies.GetView())
 }
 
 func staticView(templateName string) echo.HandlerFunc {
@@ -64,7 +54,7 @@ func postMovie(c echo.Context) error {
 		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
-	return c.Render(200, "movie-list", movies.CurrView)
+	return c.Render(200, "movie-list", movies.GetView())
 }
 
 func editMovieView(c echo.Context) error {
@@ -91,7 +81,7 @@ func updateMovie(c echo.Context) error {
 		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
-	return c.Render(200, "movie-list", movies.CurrView)
+	return c.Render(200, "movie-list", movies.GetView())
 }
 
 type fieldValidation struct {

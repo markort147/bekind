@@ -32,24 +32,13 @@ type View struct {
 	FilterCriteria FilterCriteria
 }
 
-var CurrView View
-
-func (v *View) initView(data *Data) {
-	CurrView.data = data
-	for id, _ := range data.MoviesMap {
-		CurrView.MovieIds = append(CurrView.MovieIds, id)
-	}
-	field, _ := MFToStr(MovieId)
-	CurrView.Sort(field)
-}
-
 func (v *View) refresh() {
 	v.refreshFilter()
 	v.refreshSorting()
 }
 
 func (v *View) Sort(by string) {
-	field := StrToMF(by)
+	field := strToMF(by)
 	if v.SortInfo.SortedBy == field {
 		v.SortInfo.Desc = !v.SortInfo.Desc
 	}
@@ -83,7 +72,7 @@ func (v *View) refreshSorting() {
 }
 
 func sortLabel(field MovieField, info SortCriteria) string {
-	res, _ := MFToStr(field)
+	res := mfToStr(field)
 	if field == info.SortedBy {
 		if info.Desc {
 			res = res + " ↑"
@@ -92,11 +81,6 @@ func sortLabel(field MovieField, info SortCriteria) string {
 		}
 	}
 	return res
-}
-
-func (v *View) Filter(criteria FilterCriteria) {
-	v.FilterCriteria = criteria
-	v.refreshFilter()
 }
 
 func (v *View) refreshFilter() { // title
@@ -161,4 +145,30 @@ func (v *View) refreshFilter() { // title
 		}
 	}
 	v.MovieIds = final
+}
+
+func mfToStr(field MovieField) string {
+	switch field {
+	case MovieId:
+		return "#"
+	case MovieTitle:
+		return "Title"
+	case MovieYear:
+		return "Year"
+	case MovieRate:
+		return "Rate"
+	}
+	return ""
+}
+
+func strToMF(label string) MovieField {
+	switch strings.ToLower(label) {
+	case "title":
+		return MovieTitle
+	case "year":
+		return MovieYear
+	case "rate":
+		return MovieRate
+	}
+	return MovieId
 }

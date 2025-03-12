@@ -21,10 +21,3 @@ func (ms *Data) existsById(id int) bool {
 	_, exists := ms.MoviesMap[id]
 	return exists
 }
-
-func emptyMovies() Data {
-	ms := Data{}
-	ms.Movies = make([]*Movie, 0)
-	ms.MoviesMap = make(map[int]*Movie)
-	return ms
-}
