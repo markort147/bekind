@@ -1,65 +1,63 @@
-{{ define "movies" }}
-<div class="hero is-align-items-center">
+{{ define "movie-list" }}
+<div class="hero is-align-items-center" id="movies_table">
     <header class="hero-head title is-1 has-text-centered">Movies</header>
     <div class="hero-body">
         <form class="field is-horizontal"
-              hx-put="views/movies/filter" hx-target="#movies_table_body" hx-trigger="load, input delay:150ms" hx-swap="innerHTML">
+              hx-put="views/movies/filter" hx-target="#movies_table" hx-trigger="input delay:150ms"
+              hx-swap="innerHTML">
             <div class="field-label is-normal">
                 <label class="label">Filters</label>
             </div>
             <div class="field-body">
                 <div class="field">
                     <div class="control has-icons-left">
-                        <input class="input" type="text" name="title" placeholder="Title">
+                        <input id="title-filter" class="input" type="text" name="title" placeholder="Title" value="{{.FilterCriteria.Title}}">
                         <span class="icon is-left"><i class="fas fa-font"></i></span>
                     </div>
                 </div>
                 <div class="field">
                     <div class="control has-icons-left">
-                        <input class="input" type="text" name="rate" placeholder="Rate, eg. 0-10">
+                        <input id="rate-filter" class="input" type="text" name="rate" placeholder="Rate, eg. 0-10" value="{{.FilterCriteria.Rate}}">
                         <span class="icon is-left"><i class="fas fa-star-half-alt"></i></span>
                     </div>
                 </div>
                 <div class="field">
                     <div class="control has-icons-left">
-                        <input class="input" type="text" name="year" placeholder="Year, eg. 1950-2005">
+                        <input id="year-filter" class="input" type="text" name="year" placeholder="Year, eg. 1950-2005"  value="{{.FilterCriteria.Year}}">
                         <span class="icon is-left"><i class="fas fa-calendar-alt"></i></span>
                     </div>
                 </div>
             </div>
         </form>
-
         <div class="table-container">
             <table class="table is-striped is-hoverable is-fullwidth">
                 <thead>
                 <tr>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=id" hx-target="#movies_table_body">#</th>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=title" hx-target="#movies_table_body">Title</th>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=year" hx-target="#movies_table_body">Year</th>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=rate" hx-target="#movies_table_body">Rate</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=id" hx-target="#movies_table">{{ .Header.Id }}</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=title" hx-target="#movies_table">{{ .Header.Title }}</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=year" hx-target="#movies_table">{{ .Header.Year }}</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=rate" hx-target="#movies_table">{{ .Header.Rate }}</th>
                 </tr>
                 </thead>
-                <tbody id="movies_table_body"></tbody>
+                <tbody>
+                {{ range .MovieIds }}
+                <tr id="movie_row_{{ . }}" hx-get="movie/{{ . }}/row" hx-trigger="revealed" hx-swap="innerHTML">
+                    <td>{{ . }}</td>
+                </tr>
+                {{ end }}
+                </tbody>
                 <tfoot>
                 <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Year</th>
-                    <th>Rate</th>
+                    <th>{{ .Header.Id }}</th>
+                    <th>{{ .Header.Title }}</th>
+                    <th>{{ .Header.Year }}</th>
+                    <th>{{ .Header.Rate }}</th>
                 </tr>
                 </tfoot>
             </table>
         </div>
     </div>
 </div>
-{{ end }}
-
-{{ define "movie-list" }}
-{{ range . }}
-<tr id="movie_row_{{ . }}" hx-get="movie/{{ . }}/row" hx-trigger="revealed" hx-swap="innerHTML">
-    <td>{{ . }}</td>
-</tr>
-{{ end }}
 {{ end }}
 
 {{ define "movie_row" }}

@@ -19,84 +19,22 @@ The body is rendered using the Go template engine.
 ===========================================================
 */
 
-func moviesIds(c echo.Context, criteria *movies.FindCriteria, sorting *movies.SortInfo) error {
-	movieList := movies.Find(criteria, sorting)
-	ids := make([]int, len(movieList))
-	for i := range len(movieList) {
-		ids[i] = movieList[i].Id
-	}
-	return c.Render(200, "movie-list", ids)
+func getMoviesView(c echo.Context) error {
+	return c.Render(200, "movie-list", movies.CurrView)
 }
 
-func sortMovies(c echo.Context) error {
-	sortedBy := movies.StrToMF(c.QueryParam("by"))
-	newSorting := movies.SortInfo{
-		SortedBy: sortedBy,
-		Desc:     movies.CurrentSorting.SortedBy == sortedBy && !movies.CurrentSorting.Desc,
-	}
-
-	return moviesIds(c, nil, &newSorting)
+func updateMoviesViewSorting(c echo.Context) error {
+	movies.CurrView.Sort(c.QueryParam("by"))
+	return c.Render(200, "movie-list", movies.CurrView)
 }
 
-func filterMovies(c echo.Context) error {
-	criteria := movies.FindCriteria{}
-
-	// title
-	//criteria.Title = strings.ReplaceAll(c.FormValue("title"), " ", "")
+func updateMoviesViewFilter(c echo.Context) error {
+	criteria := movies.FilterCriteria{}
 	criteria.Title = strings.TrimSpace(c.FormValue("title"))
-
-	// rate range
-	rateRange := strings.ReplaceAll(c.FormValue("rate"), " ", "")
-	if rateRange != "" {
-		minRate := uint8(0)
-		maxRate := uint8(10)
-		rates := strings.Split(rateRange, "-")
-		if len(rates) > 0 {
-			value, err := strconv.Atoi(rates[0])
-			if err == nil && value >= 0 {
-				minRate = uint8(value)
-			}
-		}
-		if strings.ContainsRune(rateRange, '-') {
-			if len(rates) == 2 {
-				value, err := strconv.Atoi(rates[1])
-				if err == nil && value <= 10 {
-					maxRate = uint8(value)
-				}
-			}
-		} else {
-			maxRate = minRate
-		}
-		criteria.Rate = []uint8{minRate, maxRate}
-	}
-
-	// year range
-	yearRange := strings.ReplaceAll(c.FormValue("year"), " ", "")
-	if yearRange != "" {
-		minYear := uint16(0)
-		maxYear := ^uint16(0)
-		years := strings.Split(yearRange, "-")
-		if len(years) > 0 {
-			value, err := strconv.Atoi(years[0])
-			if err == nil && value >= int(minYear) {
-				minYear = uint16(value)
-			}
-		}
-		if strings.ContainsRune(yearRange, '-') {
-			if len(years) == 2 {
-				value, err := strconv.Atoi(years[1])
-				if err == nil && value <= int(maxYear) {
-					maxYear = uint16(value)
-				}
-			}
-		} else {
-			maxYear = minYear
-		}
-		criteria.Year = []uint16{minYear, maxYear}
-	}
-
-	log.Logger.Debugf("filterMovies. criteria: %+v", criteria)
-	return moviesIds(c, &criteria, nil)
+	criteria.Rate = strings.ReplaceAll(c.FormValue("rate"), " ", "")
+	criteria.Year = strings.ReplaceAll(c.FormValue("year"), " ", "")
+	movies.CurrView.Filter(criteria)
+	return c.Render(200, "movie-list", movies.CurrView)
 }
 
 func staticView(templateName string) echo.HandlerFunc {
@@ -111,7 +49,7 @@ func deleteMovie(c echo.Context) error {
 		return c.NoContent(echo.ErrBadRequest.Code)
 	}
 
-	deleted := movies.DeleteById(id)
+	deleted := movies.Delete(id)
 	if !deleted {
 		return c.NoContent(echo.ErrNotFound.Code)
 	}
@@ -126,7 +64,7 @@ func postMovie(c echo.Context) error {
 		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
-	return c.Render(200, "movies", nil)
+	return c.Render(200, "movie-list", movies.CurrView)
 }
 
 func editMovieView(c echo.Context) error {
@@ -153,7 +91,7 @@ func updateMovie(c echo.Context) error {
 		Year:  uint16(year),
 		Rate:  uint8(rate),
 	})
-	return c.Render(200, "movies", nil)
+	return c.Render(200, "movie-list", movies.CurrView)
 }
 
 type fieldValidation struct {

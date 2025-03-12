@@ -5,7 +5,6 @@ import (
 	mv "github.com/markort147/bekind/cmd/bekindrewind/pkg/movies"
 	"github.com/markort147/gopkg/log"
 	"io/fs"
-	"os"
 	"strconv"
 )
 
@@ -47,32 +46,32 @@ func CSVToMovies(fileSystem fs.FS, filePath string) []int {
 	return ids
 }
 
-func MoviesToCSV(filePath string) {
-	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Logger.Fatal(err)
-	}
-	defer func(file fs.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
-	// write header
-	err = writer.Write([]string{"id", "title", "year", "rate"})
-	if err != nil {
-		log.Logger.Fatal(err)
-	}
-
-	for _, movie := range mv.Data.Movies {
-		err = writer.Write([]string{strconv.Itoa(movie.Id), movie.Title, strconv.Itoa(int(movie.Year)), strconv.Itoa(int(movie.Rate))})
-		if err != nil {
-			log.Logger.Fatal(err)
-		}
-	}
-
-}
+//func MoviesToCSV(filePath string) {
+//	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0644)
+//	if err != nil {
+//		log.Logger.Fatal(err)
+//	}
+//	defer func(file fs.File) {
+//		err := file.Close()
+//		if err != nil {
+//			panic(err)
+//		}
+//	}(file)
+//
+//	writer := csv.NewWriter(file)
+//	defer writer.Flush()
+//
+//	// write header
+//	err = writer.Write([]string{"id", "title", "year", "rate"})
+//	if err != nil {
+//		log.Logger.Fatal(err)
+//	}
+//
+//	for _, movie := range mv.Data.Movies {
+//		err = writer.Write([]string{strconv.Itoa(movie.Id), movie.Title, strconv.Itoa(int(movie.Year)), strconv.Itoa(int(movie.Rate))})
+//		if err != nil {
+//			log.Logger.Fatal(err)
+//		}
+//	}
+//
+//}

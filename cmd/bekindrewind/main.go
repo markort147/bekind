@@ -67,9 +67,9 @@ func main() {
 		DefLogger:     log.Logger,
 		RoutesRegister: func(e *echotmpl.Echo) {
 			// views
-			e.GET("/views/movies", staticView("movies"))
-			e.PUT("/views/movies/filter", filterMovies)
-			e.PUT("/views/movies/sort", sortMovies)
+			e.GET("/views/movies", getMoviesView)
+			e.PUT("/views/movies/filter", updateMoviesViewFilter)
+			e.PUT("/views/movies/sort", updateMoviesViewSorting)
 			e.GET("/views/add-movie", staticView("add_movie"))
 			e.GET("/views/edit-movie/:id", editMovieView)
 			// movie

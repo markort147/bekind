@@ -1,6 +1,7 @@
 package movies
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/markort147/gopkg/log"
@@ -16,13 +17,13 @@ func TestGetMovieFieldLabel(t *testing.T) {
 		{MovieId, "Id", nil},
 		{MovieTitle, "Title", nil},
 		{MovieYear, "Year", nil},
-		{MovieRate, "Director", nil},
+		{MovieRate, "Rate", nil},
 		{MovieField(-1), "", ErrInvalidMovieField},
 	}
 
 	for _, tc := range testCases {
 		label, err := MFToStr(tc.field)
-		if err != tc.err {
+		if !errors.Is(err, tc.err) {
 			t.Fatalf("MFToStr(%d) returned error %v, want %v", tc.field, err, tc.err)
 		}
 		if label != tc.label {
@@ -41,15 +42,12 @@ func TestParseMovieField(t *testing.T) {
 		{"Id", MovieId, nil},
 		{"Title", MovieTitle, nil},
 		{"Year", MovieYear, nil},
-		{"Director", MovieRate, nil},
-		{"invalid", -1, ErrInvalidMovieField},
+		{"Rate", MovieRate, nil},
+		{"invalid", MovieId, ErrInvalidMovieField},
 	}
 
 	for _, tc := range testCases {
-		field, err := StrToMF(tc.label)
-		if err != tc.err {
-			t.Fatalf("StrToMF(%s) returned error %v, want %v", tc.label, err, tc.err)
-		}
+		field := StrToMF(tc.label)
 		if field != tc.field {
 			t.Errorf("StrToMF(%s) = %d, want %d", tc.label, field, tc.field)
 		}
@@ -58,17 +56,14 @@ func TestParseMovieField(t *testing.T) {
 
 func TestNewMovie(t *testing.T) {
 	log.Test()
-	movie := Movie{Title: "The Matrix", Year: "1999", Director: "Lana Wachowski, Lilly Wachowski"}
-	if movie.Id != -1 {
-		t.Errorf("newMovie().Id = %d, want -1", movie.Id)
-	}
+	movie := Movie{Title: "The Matrix", Year: 1999, Rate: 8}
 	if movie.Title != "The Matrix" {
 		t.Errorf("newMovie().Title = %s, want 'The Matrix'", movie.Title)
 	}
-	if movie.Year != "1999" {
-		t.Errorf("newMovie().Year = %s, want '1999'", movie.Year)
+	if movie.Year != 1999 {
+		t.Errorf("newMovie().Year = %d, want '1999'", movie.Year)
 	}
-	if movie.Director != "Lana Wachowski, Lilly Wachowski" {
-		t.Errorf("newMovie().Director = %s, want 'Lana Wachowski, Lilly Wachowski'", movie.Director)
+	if movie.Rate != 8 {
+		t.Errorf("newMovie().Rate = %d, want 8", movie.Rate)
 	}
 }

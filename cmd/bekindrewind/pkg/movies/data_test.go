@@ -5,11 +5,11 @@ import (
 )
 
 func TestAddMovie(t *testing.T) {
-	// Create a new Movies struct
+	// Create a new Data struct
 	ms := emptyMovies()
 
-	// Add a movie to the Movies struct
-	m := newMovie("The Matrix", "1999", "The Wachowskis")
+	// Add a movie to the Data struct
+	m := Movie{Title: "The Matrix", Year: 1999, Rate: 8}
 	ms.addMovie(m)
 
 	// Check if the movie was added
@@ -19,17 +19,17 @@ func TestAddMovie(t *testing.T) {
 
 	// Check if the movie was added correctly
 	got := ms.Movies[0]
-	if got.Title != m.Title || got.Year != m.Year || got.Director != m.Director {
+	if got.Title != m.Title || got.Year != m.Year || got.Rate != m.Rate {
 		t.Errorf("expected %v, got %v", m, got)
 	}
 }
 
 func TestHasId(t *testing.T) {
-	// Create a new Movies struct
+	// Create a new Data struct
 	ms := emptyMovies()
 
-	// Add a movie to the Movies struct
-	m := newMovie("The Matrix", "1999", "The Wachowskis")
+	// Add a movie to the Data struct
+	m := Movie{Title: "The Matrix", Year: 1999, Rate: 8}
 	ms.addMovie(m)
 
 	// Check if the movie exists

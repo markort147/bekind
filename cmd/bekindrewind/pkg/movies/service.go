@@ -1,21 +1,5 @@
 package movies
 
-import (
-	"github.com/markort147/gopkg/log"
-	"sort"
-	"strings"
-)
-
-/*
-=== Movie Service ===
-This is the service layer of the application.
-It is responsible for exposing the CRUD operations on movies.
-It is the only layer that has access to the data storage.
-======================
-*/
-
-/* ==== ERRORS ==== */
-
 type MovieServiceErr string
 
 const (
@@ -26,28 +10,13 @@ func (e MovieServiceErr) Error() string {
 	return string(e)
 }
 
-// Data is the in-memory storage of Data
-var Data Movies
+var data Data
 
-var currMovies Movies
-
-// CurrentSorting is the current sorting information.
-// It is updated every time a new sorting is requested.
-var CurrentSorting = SortInfo{
-	SortedBy: MovieId,
-	Desc:     false,
-}
-
-// CurrCriteria is the current search criteria.
-var CurrCriteria = FindCriteria{}
-
-// Init initializes the data with an empty list of movies
 func Init() {
-	Data = emptyMovies()
-	currMovies = emptyMovies()
+	data = emptyMovies()
+	CurrView.initView(&data)
 }
 
-// FillForTests fills the in-memory storage with some mock data
 func FillForTests() {
 	mock := []Movie{
 		{Id: 3, Title: "Interstellar", Year: 2014, Rate: 8},
@@ -95,88 +64,35 @@ func FillForTests() {
 		{Id: 43, Title: "Thor: Ragnarok", Year: 2017, Rate: 8},
 	}
 	for _, m := range mock {
-		Data.addMovie(m)
-		currMovies.addMovie(m)
+		data.addMovie(m)
 	}
 }
 
-// FindAll returns all movies sorted according to the given sortInfo
-func FindAll(sortInfo *SortInfo) []Movie {
-	if sortInfo == nil {
-		sortInfo = &SortInfo{
-			SortedBy: MovieId,
-			Desc:     false,
-		}
-	}
-
-	sortedMovies := make([]Movie, len(Data.Movies))
-	for i, m := range Data.Movies {
-		sortedMovies[i] = *m
-	}
-
-	sort.Sort(MovieSorter{SortInfo: *sortInfo, Movies: sortedMovies})
-	CurrentSorting = *sortInfo
-	log.Logger.Debugf("FindAll. Sorted according to %v: %v", *sortInfo, sortedMovies)
-	return sortedMovies
-}
-
-// FindById returns the movie with the given id
 func FindById(id int) (Movie, error) {
-	movie, exists := Data.MoviesMap[id]
+	movie, exists := data.MoviesMap[id]
 	if !exists {
 		return Movie{}, MovieNotFoundErr
 	}
 	return *movie, nil
 }
 
-type FindCriteria struct {
-	Title string
-	Rate  []uint8
-	Year  []uint16
-}
-
-func Find(criteria *FindCriteria, sortInfo *SortInfo) []Movie {
-	if criteria != nil {
-		CurrCriteria = *criteria
-	}
-
-	if sortInfo != nil {
-		CurrentSorting = *sortInfo
-	}
-
-	log.Logger.Debugf("Find. Criteria: %+v, Sorting: %+v", criteria, CurrentSorting)
-
-	// filter
-	final := make([]Movie, 0)
-	for _, movie := range Data.Movies {
-		if (CurrCriteria.Title == "" || strings.Contains(strings.ToLower(movie.Title), strings.ToLower(CurrCriteria.Title))) &&
-			(CurrCriteria.Rate == nil || (CurrCriteria.Rate[0] <= movie.Rate && movie.Rate <= CurrCriteria.Rate[1])) &&
-			(CurrCriteria.Year == nil || (CurrCriteria.Year[0] <= movie.Year && movie.Year <= CurrCriteria.Year[1])) {
-			final = append(final, *movie)
-		}
-	}
-
-	sort.Sort(MovieSorter{SortInfo: CurrentSorting, Movies: final})
-	return final
-}
-
-// Save adds the given movie to the collection
 func Save(m Movie) Movie {
-	return Data.addMovie(m)
+	saved := data.addMovie(m)
+	CurrView.refresh()
+	return saved
 }
 
-// Update updates the movie with the given id
 func Update(id int, new Movie) {
-	old := Data.MoviesMap[id]
+	old := data.MoviesMap[id]
 	old.Rate = new.Rate
 	old.Title = new.Title
 	old.Year = new.Year
+	CurrView.refresh()
 }
 
-// DeleteById deletes the movie with the given id
-func DeleteById(id int) bool {
+func Delete(id int) bool {
 	remove := -1
-	for i, m := range Data.Movies {
+	for i, m := range data.Movies {
 		if m.Id == id {
 			remove = i
 			break
@@ -187,7 +103,9 @@ func DeleteById(id int) bool {
 		return false
 	}
 
-	Data.Movies = append(Data.Movies[:remove], Data.Movies[remove+1:]...)
-	delete(Data.MoviesMap, id)
+	data.Movies = append(data.Movies[:remove], data.Movies[remove+1:]...)
+	delete(data.MoviesMap, id)
+
+	CurrView.refresh()
 	return true
 }

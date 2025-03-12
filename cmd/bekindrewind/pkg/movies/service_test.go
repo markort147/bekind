@@ -18,14 +18,14 @@ func getTestMovies() []Movie {
 
 func TestFindAll(t *testing.T) {
 	log.Test()
-	// Initialize test data
+	// Initialize test Data
 	Init()
 	for _, m := range getTestMovies() {
 		Save(m)
 	}
 
 	// Test sorting by Title Ascending
-	sortedMovies := FindAll(&SortInfo{SortedBy: MovieTitle, Desc: false})
+	sortedMovies := FindAll(&SortCriteria{SortedBy: MovieTitle, Desc: false})
 
 	if len(sortedMovies) == 0 {
 		t.Fatalf("FindAll failed. Expected sortedMovies of size %d, got %d", len(getTestMovies()), len(sortedMovies))
@@ -42,7 +42,7 @@ func TestFindAll(t *testing.T) {
 
 func TestFindByIds(t *testing.T) {
 	log.Test()
-	// Initialize test data
+	// Initialize test Data
 	Init()
 	for _, m := range getTestMovies() {
 		Save(m)
@@ -50,7 +50,7 @@ func TestFindByIds(t *testing.T) {
 
 	// Fetch only two movies, sorted by Year Descending
 	ids := []int{1, 2}
-	sortedMovies := Find(FindCriteria{Id: ids})
+	sortedMovies := Find(FilterCriteria{Id: ids})
 
 	expectedOrder := []string{"The Godfather", "Pulp Fiction"}
 
@@ -63,7 +63,7 @@ func TestFindByIds(t *testing.T) {
 
 func TestFindById(t *testing.T) {
 	log.Test()
-	// Initialize test data
+	// Initialize test Data
 	Init()
 	for _, m := range getTestMovies() {
 		Save(m)
@@ -80,7 +80,7 @@ func TestFindById(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	log.Test()
-	// Initialize test data
+	// Initialize test Data
 	Init()
 	for _, m := range getTestMovies() {
 		Save(m)
@@ -102,35 +102,35 @@ func TestUpdate(t *testing.T) {
 func TestDeleteById(t *testing.T) {
 	t.Run("Delete existing movie", func(t *testing.T) {
 		log.Test()
-		// Initialize test data
+		// Initialize test Data
 		Init()
 		for _, m := range getTestMovies() {
 			Save(m)
 		}
 
 		id := 1
-		DeleteById(id)
+		Delete(id)
 
 		_, err := FindById(id)
 		want := "Requested id=1 does not exist"
 
 		if err == nil || err != MovieNotFoundErr {
-			t.Errorf("DeleteById failed. Expected error %v, got %v", want, err)
+			t.Errorf("Delete failed. Expected error %v, got %v", want, err)
 		}
 	})
 	t.Run("Delete non-existing movie", func(t *testing.T) {
 		log.Test()
-		// Initialize test data
+		// Initialize test Data
 		Init()
 		for _, m := range getTestMovies() {
 			Save(m)
 		}
 
 		id := 5
-		ok := DeleteById(id)
+		ok := Delete(id)
 
 		if ok {
-			t.Errorf("DeleteById failed. Expected false, got true")
+			t.Errorf("Delete failed. Expected false, got true")
 		}
 	})
 
