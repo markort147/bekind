@@ -1,5 +1,7 @@
 tmp/
 .vscode/
 .idea/
+dev/
 app*
 *.log
+moviess.csv

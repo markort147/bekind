@@ -2,76 +2,112 @@ package main
 
 import (
 	"encoding/csv"
-	mv "github.com/markort147/bekind/cmd/bekindrewind/pkg/movies"
-	"github.com/markort147/gopkg/log"
-	"io/fs"
+	"fmt"
+	"io"
+	"mime/multipart"
 	"strconv"
+	"strings"
 )
 
-func fromCSV(fileSystem fs.FS, filePath string) [][]string {
-	file, err := fileSystem.Open(filePath)
-	if err != nil {
-		log.Logger.Fatal(err)
-	}
-	defer func(file fs.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
-
+func csvToMovies(file multipart.File) ([]*Movie, error) {
+	// read the CSV file but skip the first line
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
 	if err != nil {
-		log.Logger.Fatal(err)
+		return nil, fmt.Errorf("error reading file: %v", err)
 	}
+	records = records[1:]
 
-	//log.Logger.Debugf("Read %d records", len(records))
-	// return all but the first row
-	return records[1:]
-}
-
-func CSVToMovies(fileSystem fs.FS, filePath string) []int {
-	records := fromCSV(fileSystem, filePath)
-	ids := make([]int, len(records))
+	// parse the CSV records into Movie structs
+	movies := make([]*Movie, len(records))
 	for i, record := range records {
-		// title is 1, year is 3, rating is 5
-		title := record[1]
-		year, _ := strconv.Atoi(record[3])
-		rate, _ := strconv.Atoi(record[5])
-		movie := mv.Movie{Title: title, Year: uint16(year), Rate: uint8(rate)}
-		saved := mv.Save(movie)
-		ids[i] = saved.Id
+		year, err := strconv.Atoi(record[3])
+		if err != nil {
+			return nil, fmt.Errorf("error parsing csv at line %d, invalid year: %w", i+1, err)
+		}
+		seen, err := strconv.Atoi(record[4])
+		if err != nil {
+			return nil, fmt.Errorf("error parsing csv at line %d, invalid seen_year: %w", i+1, err)
+		}
+		rate, err := strconv.Atoi(record[5])
+		if err != nil {
+			return nil, fmt.Errorf("error parsing csv at line %d, invalid rate: %w", i+1, err)
+		}
+		movies[i] = &Movie{
+			Title:     record[1],
+			Sagas:     strings.Split(record[2], "|"),
+			Year:      uint16(year),
+			SeenYear:  uint16(seen),
+			Rate:      uint8(rate),
+			Directors: strings.Split(record[6], "|"),
+			Writers:   strings.Split(record[7], "|"),
+			Composers: strings.Split(record[8], "|"),
+			Dops:      strings.Split(record[9], "|"),
+			Editors:   strings.Split(record[10], "|"),
+			Producers: strings.Split(record[11], "|"),
+			Studios:   strings.Split(record[12], "|"),
+			Countries: strings.Split(record[13], "|"),
+			Genres:    strings.Split(record[14], "|"),
+		}
 	}
-	return ids
+
+	Logger.Infof("Loaded %d movies from file %+v", len(records), file)
+	return movies, nil
 }
 
-//func MoviesToCSV(filePath string) {
-//	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0644)
-//	if err != nil {
-//		log.Logger.Fatal(err)
-//	}
-//	defer func(file fs.File) {
-//		err := file.Close()
-//		if err != nil {
-//			panic(err)
-//		}
-//	}(file)
-//
-//	writer := csv.NewWriter(file)
-//	defer writer.Flush()
-//
-//	// write header
-//	err = writer.Write([]string{"id", "title", "year", "rate"})
-//	if err != nil {
-//		log.Logger.Fatal(err)
-//	}
-//
-//	for _, movie := range mv.Data.Movies {
-//		err = writer.Write([]string{strconv.Itoa(movie.Id), movie.Title, strconv.Itoa(int(movie.Year)), strconv.Itoa(int(movie.Rate))})
-//		if err != nil {
-//			log.Logger.Fatal(err)
-//		}
-//	}
-//
-//}
+func moviesToCSV(movies []*Movie) (string, error) {
+	// open the CSV file
+	buffer := io.Writer(&strings.Builder{})
+
+	// create a new CSV writer
+	writer := csv.NewWriter(buffer)
+	defer writer.Flush()
+
+	// write the header
+	if err := writer.Write([]string{
+		"id",
+		"title",
+		"saga",
+		"release_year",
+		"seen_year",
+		"vote",
+		"directors",
+		"writers",
+		"composers",
+		"dops",
+		"editors",
+		"producers",
+		"studios",
+		"countries",
+		"genres",
+	}); err != nil {
+		return "", fmt.Errorf("error writing the header: %w", err)
+	}
+
+	// write the records
+	Logger.Info("writing records")
+	for _, movie := range movies {
+		if err := writer.Write([]string{
+			strconv.Itoa(movie.Id),
+			movie.Title,
+			strings.Join(movie.Sagas, "|"),
+			strconv.Itoa(int(movie.Year)),
+			strconv.Itoa(int(movie.SeenYear)),
+			strconv.Itoa(int(movie.Rate)),
+			strings.Join(movie.Directors, "|"),
+			strings.Join(movie.Writers, "|"),
+			strings.Join(movie.Composers, "|"),
+			strings.Join(movie.Dops, "|"),
+			strings.Join(movie.Editors, "|"),
+			strings.Join(movie.Producers, "|"),
+			strings.Join(movie.Studios, "|"),
+			strings.Join(movie.Countries, "|"),
+			strings.Join(movie.Genres, "|"),
+		}); err != nil {
+			return "", fmt.Errorf("error writing the record %v: %w", movie, err)
+		}
+	}
+
+	Logger.Infof("wrote %d movies", len(movies))
+	return buffer.(*strings.Builder).String(), nil
+}

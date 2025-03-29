@@ -30,6 +30,14 @@
                     </span>
                 </button>
             </div>
+            <div class="navbar-item">
+                <button hx-get="views/data" hx-target="#main-view">
+                    <span>
+                        <span class="icon"><i class="fas fa-file-archive"></i></span>
+                        <span>Import/Export</span>
+                    </span>
+                </button>
+            </div>
         </div>
     </nav>
     <section id="main-view" class="section">
@@ -101,6 +109,22 @@
     // Initialize the class change handler on DOMContentLoaded and htmx:afterSwap
     document.addEventListener('DOMContentLoaded', handleVerifiedInputClassChange);
     document.body.addEventListener('htmx:afterSwap', handleVerifiedInputClassChange);
+
+    // Handle file download for CSV files
+    document.addEventListener('htmx:afterRequest', function (evt) {
+        const xhr = evt.detail.xhr;
+        if (xhr.getResponseHeader('Content-Disposition') === 'attachment' && typeof xhr.getResponseHeader('HX-Download') === 'string') {
+            const filename = xhr.getResponseHeader('HX-Download');
+            console.log(xhr.response);
+            const blob = new Blob([xhr.response], {type: 'text/csv'});
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
 </script>
 
 </html>

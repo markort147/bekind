@@ -1,19 +1,44 @@
 package main
 
 import (
+	"fmt"
 	"github.com/labstack/gommon/log"
 	"io"
 	"os"
 )
 
-type Config struct {
-	Server struct {
-		Port int `yaml:"port"`
-	} `yaml:"server"`
-	Log struct {
-		Level  string `yaml:"level"`
-		Output string `yaml:"output"`
-	} `yaml:"log"`
+/*
+=== GLOBAL LOGGER CONFIGURATION ===
+This file is used to configure the global logger for the application.
+The global logger is used to log messages that are not specific to a particular package.
+==================================
+*/
+
+type LogConfig struct {
+	Level  log.Lvl
+	Output io.Writer
+}
+
+var Logger = log.New("global")
+
+func InitLog(cfg *LogConfig) error {
+	if err := fixConfig(cfg); err != nil {
+		return fmt.Errorf("log configuration error: %w", err)
+	}
+
+	Logger.SetLevel(cfg.Level)
+	Logger.SetOutput(cfg.Output)
+	return nil
+}
+
+func fixConfig(cfg *LogConfig) error {
+	if cfg.Level == 0 {
+		cfg.Level = log.INFO
+	}
+	if cfg.Output == nil {
+		cfg.Output = os.Stdout
+	}
+	return nil
 }
 
 func parseLogLevel(level string) log.Lvl {

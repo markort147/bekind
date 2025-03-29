@@ -1,0 +1,26 @@
+{{ define "data" }}
+<div class="hero" id="upload_file_form_container">
+    <header class="hero-head title is-1 has-text-centered">Upload csv</header>
+    <div class="hero-body">
+        <form hx-encoding='multipart/form-data' hx-post='/upload'
+              _='on htmx:xhr:progress(loaded, total) set #upload-progress.value to (loaded/total)*100'
+              hx-target="#main-view">
+            <input type='file' name='file'>
+            <button class='button verified-button is-primary is-small'>
+                Upload
+            </button>
+            <progress class='progress is-success is-medium' id='upload-progress' value='0' max='100'></progress>
+        </form>
+    </div>
+</div>
+
+<header class="hero-head title is-1 has-text-centered">Download csv</header>
+<div class="hero-body">
+    <div class="hero" id="download_file_form_container">
+        <button class='button verified-button is-primary is-small'
+                hx-get='/download' hx-swap="none">
+            Download
+        </button>
+    </div>
+</div>
+{{ end }}
