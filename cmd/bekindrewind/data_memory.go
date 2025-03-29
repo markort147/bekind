@@ -12,7 +12,7 @@ type MemoryData struct {
 
 func newMemoryData() *MemoryData {
 	md := &MemoryData{}
-	md.nextId = 1
+	md.nextId = 0
 	md.Movies = make([]*Movie, 0)
 	md.MoviesMap = make(map[int]*Movie)
 	return md
