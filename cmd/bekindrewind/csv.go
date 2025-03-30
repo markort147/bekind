@@ -33,18 +33,33 @@ func csvToMovies(file multipart.File) ([]*Movie, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error parsing csv at line %d, invalid rate: %w", i+1, err)
 		}
+
+		rolePeople := make(map[*string][]string)
+		for index, role := range map[int]string{
+			6:  "director",
+			7:  "writer",
+			8:  "composer",
+			9:  "cinematographer",
+			10: "editor",
+			11: "producer",
+		} {
+			if record[index] != "" {
+				for _, name := range strings.Split(record[index], "|") {
+					if rolePeople[&name] == nil {
+						rolePeople[&name] = make([]string, 0)
+					}
+					rolePeople[&name] = append(rolePeople[&name], role)
+				}
+			}
+		}
+
 		movies[i] = &Movie{
 			Title:     record[1],
 			Sagas:     strings.Split(record[2], "|"),
-			Year:      uint16(year),
-			SeenYear:  uint16(seen),
-			Rate:      uint8(rate),
-			Directors: strings.Split(record[6], "|"),
-			Writers:   strings.Split(record[7], "|"),
-			Composers: strings.Split(record[8], "|"),
-			Dops:      strings.Split(record[9], "|"),
-			Editors:   strings.Split(record[10], "|"),
-			Producers: strings.Split(record[11], "|"),
+			Year:      year,
+			SeenYear:  seen,
+			Rate:      rate,
+			People:    rolePeople,
 			Studios:   strings.Split(record[12], "|"),
 			Countries: strings.Split(record[13], "|"),
 			Genres:    strings.Split(record[14], "|"),
@@ -87,19 +102,47 @@ func moviesToCSV(movies []*Movie) (string, error) {
 	// write the records
 	Logger.Info("writing records")
 	for _, movie := range movies {
+
+		directors := make([]string, 0)
+		writers := make([]string, 0)
+		composers := make([]string, 0)
+		dops := make([]string, 0)
+		editors := make([]string, 0)
+		producers := make([]string, 0)
+		for name, roles := range movie.People {
+			for _, role := range roles {
+				switch role {
+				case "director":
+					directors = append(directors, *name)
+				case "writer":
+					writers = append(writers, *name)
+				case "composer":
+					composers = append(composers, *name)
+				case "cinematographer":
+					dops = append(dops, *name)
+				case "editor":
+					editors = append(editors, *name)
+				case "producer":
+					producers = append(producers, *name)
+				default:
+					return "", fmt.Errorf("unknown person role %q", role)
+				}
+			}
+		}
+
 		if err := writer.Write([]string{
 			strconv.Itoa(movie.Id),
 			movie.Title,
 			strings.Join(movie.Sagas, "|"),
-			strconv.Itoa(int(movie.Year)),
-			strconv.Itoa(int(movie.SeenYear)),
-			strconv.Itoa(int(movie.Rate)),
-			strings.Join(movie.Directors, "|"),
-			strings.Join(movie.Writers, "|"),
-			strings.Join(movie.Composers, "|"),
-			strings.Join(movie.Dops, "|"),
-			strings.Join(movie.Editors, "|"),
-			strings.Join(movie.Producers, "|"),
+			strconv.Itoa(movie.Year),
+			strconv.Itoa(movie.SeenYear),
+			strconv.Itoa(movie.Rate),
+			strings.Join(directors, "|"),
+			strings.Join(writers, "|"),
+			strings.Join(composers, "|"),
+			strings.Join(dops, "|"),
+			strings.Join(editors, "|"),
+			strings.Join(producers, "|"),
 			strings.Join(movie.Studios, "|"),
 			strings.Join(movie.Countries, "|"),
 			strings.Join(movie.Genres, "|"),

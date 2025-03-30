@@ -13,4 +13,10 @@ type Data interface {
 	updateMovie(int, Movie) error
 	// purge deletes all data from the data store
 	purge() error
+	// people return all people
+	people() []int
+	// person returns a person by id and a boolean indicating if it was found
+	person(int) (*string, bool)
+	// personsStats returns a person stats by id
+	personStats(int) (*PersonStats, error)
 }

@@ -3,8 +3,6 @@ package main
 import (
 	"embed"
 	"fmt"
-	"github.com/labstack/echo/v4"
-	"net/http"
 	"os"
 	"strconv"
 )
@@ -44,10 +42,12 @@ func main() {
 
 	// init data storage
 	switch mode {
-	case "memory":
-		data = newMemoryData()
 	//case "psql":
-	//data = newPsqlData(os.Getenv("BEKIND_DB_CONN_STRING"))
+	//	psqlData, err := newPsqlData(os.Getenv("BEKIND_DB_CONN_STRING"))
+	//	if err != nil {
+	//		Logger.Fatalf("Error init psql: %v", err)
+	//	}
+	//	data = psqlData
 	default:
 		data = newMemoryData()
 	}
@@ -67,6 +67,7 @@ func main() {
 			e.GET("/views/add-movie", getViewsAddMovie)
 			e.GET("/views/edit-movie/:id", getViewsEditMovie)
 			e.GET("/views/data", getViewsData)
+			e.GET("/views/people", getViewsPeople)
 
 			e.GET("/movie/:id/details", getMovieDetails)
 			e.GET("/movie/:id/row", getMovieRow)
@@ -74,12 +75,25 @@ func main() {
 			e.PUT("/movie/:id", putMovie)
 			e.DELETE("/movie/:id", deleteMovie)
 
+			e.GET("people/table-body", getPeopleTableBody)
+			e.GET("/person/:id/avgrate", getPersonAvgRate)
+			e.GET("/person/:id/name", getPersonName)
+			e.GET("/person/:id/table-row", getPersonTableRow)
+
 			e.POST("/validate/title", postValidateTitle)
 			e.POST("/validate/year", postValidateYear)
 			e.POST("/validate/rate", postValidateRate)
 
 			e.POST("/upload", postUpload)
 			e.GET("/download", getDownload)
+		},
+		CustomFuncs: map[string]any{
+			"IndexPair": func(i, j int) map[string]int {
+				return map[string]int{
+					"Curr": i,
+					"Next": j,
+				}
+			},
 		},
 	})
 	if err != nil {
@@ -89,15 +103,4 @@ func main() {
 
 	// wait for the server to exit
 	wgServer.Wait()
-}
-
-func getDownload(c echo.Context) error {
-	stream, err := moviesToCSV(data.movies())
-	if err != nil {
-		return err
-	}
-	c.Response().Header().Add("Content-Disposition", "attachment")
-	c.Response().Header().Add("HX-Download", "movies.csv")
-	c.Response().Header().Add("Content-Type", "text/csv")
-	return c.String(http.StatusOK, stream)
 }

@@ -4,24 +4,24 @@ type Movie struct {
 	Id        int
 	Title     string
 	Sagas     []string
-	Year      uint16
-	SeenYear  uint16
-	Rate      uint8
-	Directors []string
-	Writers   []string
-	Composers []string
-	Dops      []string
-	Editors   []string
-	Producers []string
+	Year      int
+	SeenYear  int
+	Rate      int
+	People    map[*string][]string
 	Studios   []string
 	Countries []string
 	Genres    []string
 }
-type MovieField int
+
+type PersonStats struct {
+	AvgRate float32
+}
+
+type MovieField = string
 
 const (
-	MovieId MovieField = iota
-	MovieTitle
-	MovieYear
-	MovieRate
+	MovieId    MovieField = "id"
+	MovieTitle            = "title"
+	MovieYear             = "year"
+	MovieRate             = "rate"
 )

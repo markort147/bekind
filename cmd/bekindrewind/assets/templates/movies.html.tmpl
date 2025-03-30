@@ -33,10 +33,10 @@
             <table class="table is-striped is-hoverable is-fullwidth">
                 <thead>
                 <tr>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=id" hx-target="#movies_table">{{ .Header.Id }}</th>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=title" hx-target="#movies_table">{{ .Header.Title }}</th>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=year" hx-target="#movies_table">{{ .Header.Year }}</th>
-                    <th style="cursor: pointer" hx-put="views/movies/sort?by=rate" hx-target="#movies_table">{{ .Header.Rate }}</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=id" hx-target="#movies_table">{{ .Header.id }}</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=title" hx-target="#movies_table">{{ .Header.title }}</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=year" hx-target="#movies_table">{{ .Header.year }}</th>
+                    <th style="cursor: pointer" hx-put="views/movies/sort?by=rate" hx-target="#movies_table">{{ .Header.rate }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,10 +48,10 @@
                 </tbody>
                 <tfoot>
                 <tr>
-                    <th>{{ .Header.Id }}</th>
-                    <th>{{ .Header.Title }}</th>
-                    <th>{{ .Header.Year }}</th>
-                    <th>{{ .Header.Rate }}</th>
+                    <th>{{ .Header.id }}</th>
+                    <th>{{ .Header.title }}</th>
+                    <th>{{ .Header.year }}</th>
+                    <th>{{ .Header.rate }}</th>
                 </tr>
                 </tfoot>
             </table>

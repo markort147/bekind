@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -53,8 +54,8 @@ func postMovie(c echo.Context) error {
 	year, _ := strconv.Atoi(c.FormValue("year"))
 	data.addMovie(Movie{
 		Title: c.FormValue("title"),
-		Year:  uint16(year),
-		Rate:  uint8(rate),
+		Year:  year,
+		Rate:  rate,
 	})
 	return c.Render(200, "movie-list", moviesView)
 }
@@ -79,8 +80,8 @@ func putMovie(c echo.Context) error {
 	year, _ := strconv.Atoi(c.FormValue("year"))
 	if err := data.updateMovie(id, Movie{
 		Title: c.FormValue("title"),
-		Year:  uint16(year),
-		Rate:  uint8(rate),
+		Year:  year,
+		Rate:  rate,
 	}); err != nil {
 		Logger.Error(fmt.Errorf("failed to update movie: %w", err))
 		return c.NoContent(echo.ErrBadRequest.Code)
@@ -229,4 +230,91 @@ func postUpload(c echo.Context) error {
 	moviesView.refresh()
 
 	return getViewsMovies(c)
+}
+
+func getPersonAvgRate(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	stats, err := data.personStats(id)
+	if err != nil {
+		return err
+	}
+
+	return c.String(http.StatusOK, strconv.FormatFloat(float64(stats.AvgRate), 'f', 2, 32))
+}
+
+func getViewsPeople(c echo.Context) error {
+	return c.Render(http.StatusOK, "people-view", nil)
+}
+
+func getDownload(c echo.Context) error {
+	stream, err := moviesToCSV(data.movies())
+	if err != nil {
+		return err
+	}
+	c.Response().Header().Add("Content-Disposition", "attachment")
+	c.Response().Header().Add("HX-Download", "movies.csv")
+	c.Response().Header().Add("Content-Type", "text/csv")
+	return c.String(http.StatusOK, stream)
+}
+
+func getPersonName(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	name, exists := data.person(id)
+	if !exists {
+		return c.NoContent(http.StatusNotFound)
+	}
+	return c.String(http.StatusOK, *name)
+}
+
+func getPersonTableRow(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if _, exists := data.person(id); !exists {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	next := id + 1
+	for {
+		if _, exists := data.person(next); exists || next > len(data.people()) {
+			break
+		}
+		next += 1
+	}
+
+	return c.Render(http.StatusOK, "person-row", map[string]any{
+		"Curr": id,
+		"Next": next,
+	})
+}
+
+func getPeopleTableBody(c echo.Context) error {
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	people := data.people()
+
+	lowerBound := page * limit
+	if lowerBound > len(people) {
+		return c.NoContent(http.StatusNoContent)
+	}
+
+	upperBound := lowerBound + limit
+	if upperBound > len(people) {
+		upperBound = len(people)
+	}
+
+	slices.SortFunc(people, func(i, j int) int {
+		return j - i
+		//if i == j {
+		//	return 0
+		//}
+		//p1, _ := data.person(i)
+		//p2, _ := data.person(j)
+		//return strings.Compare(strings.ToLower(*p1), strings.ToLower(*p2))
+	})
+
+	return c.Render(http.StatusOK, "people-table-body", map[string]any{
+		"People": people[lowerBound:upperBound],
+		"Page":   page + 1,
+		"Limit":  limit,
+	})
 }
