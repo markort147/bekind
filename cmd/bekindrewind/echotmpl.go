@@ -45,6 +45,7 @@ func StartServer(cfg *SrvConfig) (*sync.WaitGroup, error) {
 
 	// serve index and register custom routes
 	e.Renderer = newTemplateRenderer(cfg.FileSystem, "assets/templates/*", cfg.CustomFuncs)
+	e.StaticFS("/assets", echo.MustSubFS(cfg.FileSystem, "assets"))
 	e.FileFS("/", "assets/index.html", cfg.FileSystem)
 	if cfg.RoutesRegister != nil {
 		cfg.RoutesRegister(e)
