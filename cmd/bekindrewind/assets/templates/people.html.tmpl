@@ -1,37 +1,35 @@
 {{ define "people-view" }}
-<div class="hero is-align-items-center" id="movies_table">
-    <header class="hero-head title is-1 has-text-centered">People</header>
-    <div class="hero-body">
-        <div class="table-container">
-            <table class="table is-striped is-hoverable is-fullwidth">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Avg Rate</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr hx-get="people/table-body?page=0&limit=500" hx-trigger="revealed" hx-swap="outerHTML" hx-target="this"></tr>
-                </tbody>
-                <tfoot>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Avg Rate</th>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
+<h1>People</h1>
+
+<div class="scrollable-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Avg Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr hx-get="people/table-body?page=0&limit=500" hx-trigger="revealed" hx-swap="outerHTML" hx-target="this">
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Avg Rate</th>
+            </tr>
+        </tfoot>
+    </table>
 </div>
 {{ end }}
 
 {{ define "person-row" }}
-<tr hx-get="person/{{ .Next }}/table-row" hx-trigger="revealed" hx-swap="afterend">
+<tr hx-get="person/{{ .Next }}/table-row" hx-trigger="intersect once" hx-swap="afterend">
     <td>{{ .Curr }}</td>
-    <td hx-get="person/{{ .Curr }}/name" hx-trigger="revealed" hx-swap="innerHTML"></td>
-    <td hx-get="person/{{ .Curr }}/avgrate" hx-trigger="revealed" hx-swap="innerHTML"></td>
+    <td hx-get="person/{{ .Curr }}/name" hx-trigger="intersect once" hx-swap="innerHTML"></td>
+    <td hx-get="person/{{ .Curr }}/avgrate" hx-trigger="intersect once" hx-swap="innerHTML"></td>
 </tr>
 {{ end }}
 
@@ -39,9 +37,10 @@
 {{ range .People }}
 <tr>
     <td>{{ . }}</td>
-    <td hx-get="person/{{ . }}/name" hx-trigger="revealed" hx-swap="innerHTML"></td>
-    <td hx-get="person/{{ . }}/avgrate" hx-trigger="revealed" hx-swap="innerHTML"></td>
+    <td hx-get="person/{{ . }}/name" hx-trigger="intersect once" hx-swap="innerHTML"></td>
+    <td hx-get="person/{{ . }}/avgrate" hx-trigger="intersect once" hx-swap="innerHTML"></td>
 </tr>
 {{ end }}
-<tr hx-get="people/table-body?page={{ .Page }}&limit={{ .Limit }}" hx-trigger="revealed" hx-swap="outerHTML" hx-target="this"></tr>
+<tr hx-get="people/table-body?page={{ .Page }}&limit={{ .Limit }}" hx-trigger="intersect once" hx-swap="outerHTML"
+    hx-target="this"></tr>
 {{ end }}

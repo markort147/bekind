@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
 	"html/template"
 	"io"
 	"io/fs"
@@ -15,6 +13,9 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 
 	"github.com/labstack/echo/v4"
 )

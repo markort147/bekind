@@ -1,11 +1,12 @@
 {{ define "movie_input" }}
-<div id="{{ .Name }}_input" class="field">
-    <label for="movie_{{ .Name }}" class="label">{{ .Label }}</label>
-    <div class="control">
-        <input class="input verified-input {{if .Valid}} is-success {{ else }} is-danger {{ end }}" type="text"
-               name="{{ .Name }}" id="movie_{{ .Name }}" hx-post="validate/{{ .Name }}" hx-target="#{{ .Name }}_input" hx-swap="outerHTML"
-               hx-trigger="input changed delay:400ms" value="{{- .Value -}}">
-        {{ if not .Valid }}<p class="help is-danger">{{ .Message }}</p>{{ end }}
-    </div>
+<div id="{{ .Name }}_input">
+
+    <label for="movie_{{ .Name }}">{{ .Label }}</label>
+
+    <input class="verified-input {{if .Valid}} valid-input {{ else }} invalid-input {{ end }}" type="text"
+        name="{{ .Name }}" id="movie_{{ .Name }}" hx-post="validate/{{ .Name }}" hx-target="#{{ .Name }}_input"
+        hx-swap="outerHTML" hx-trigger="input changed delay:400ms" value="{{- .Value -}}">
+
+    {{ if not .Valid }}<span class="invalid-input-message">{{ .Message }}</span>{{ end }}
 </div>
 {{ end }}

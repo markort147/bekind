@@ -1,81 +1,220 @@
-<html data-theme="dark">
+<html>
 
 <head>
     <title>Be Kind Rewind</title>
     <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
-          integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* GLOBALS */
+
+        html {
+            color: white;
+            background-color: rgb(37, 37, 37);
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        button {
+            background-color: rgba(0, 0, 0, 0);
+            color: inherit;
+            border: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        button:hover {
+            color: rgba(255, 187, 0, 0.815);
+            cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+        }
+
+        i {
+            background-color: rgba(0, 0, 0, 0);
+            color: inherit;
+            padding: 3px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        a:link {
+            color: lightblue;
+        }
+
+        a:visited {
+            color: lightpink;
+        }
+
+        a:active {
+            color: lightgreen;
+        }
+
+        strong {
+            color: rgba(255, 187, 0, 0.815);
+        }
+
+        /* FOOTER */
+
+        #footer {
+            background-color: black;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            text-align: center;
+            width: 100%;
+            font-size: 12px;
+            color: white;
+        }
+
+        /* NAVBAR */
+
+        #navbar {
+            background-color: black;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 46px;
+        }
+
+        #navbar button {
+            padding: 15px 32px;
+            font-size: 16px;
+        }
+
+        /* MAIN VIEW */
+
+        #main-view {
+            align-items: center;
+            justify-items: center;
+
+            position: fixed;
+            top: 45px;
+            bottom: 35px;
+            left: 0;
+            right: 0;
+            padding-bottom: 15px;
+
+            background-color: rgb(37, 37, 37);
+            color: white;
+        }
+
+        /* MOVIES VIEW */
+
+        #movies-table-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #movie-filters {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+        }
+
+        .movie-filter {
+            margin: 3px;
+            border: 1px solid white;
+        }
+
+        .movie-filter-input {
+            border: none;
+            background-color: inherit;
+            color: inherit;
+        }
+
+        #movies-table {
+            overflow-y: auto;
+            flex: 1;
+            color: inherit;
+        }
+
+        #movies-table table {
+            border-collapse: collapse;
+            color: inherit;
+        }
+
+        #movies-table table td {
+            padding: 0 5px;
+        }
+
+        #movies-table thead th {
+            border-bottom: 1px solid white;
+            cursor: pointer;
+        }
+
+        #movies-table thead th:hover {
+            color: rgba(255, 187, 0, 0.815);
+        }
+
+        #movies-table tfoot th {
+            border-top: 1px solid white;
+        }
+
+        #movies-table tbody tr:hover {
+            background-color: black;
+        }
+
+        /* ADD MOVIE VIEW */
+
+        #add_movie_form_container .invalid-input-message {
+            color: brown;
+        }
+
+        #add_movie_form_container .movie-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #add_movie_form_container .invalid-input {
+            border: 1px solid indianred;
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div style="display: flex; flex-direction: row;">
-            <div class="navbar-item">
-                <button hx-get="views/movies" hx-target="#main-view">
-                    <span>
-                        <span class="icon"><i class="fas fa-list"></i></span>
-                        <span>Movies</span>
-                    </span>
-                </button>
-            </div>
-            <div class="navbar-item">
-                <button hx-get="views/people" hx-target="#main-view">
-                    <span>
-                        <span class="icon"><i class="fas fa-walking"></i></span>
-                        <span>People</span>
-                    </span>
-                </button>
-            </div>
-            <div class="navbar-item">
-                <button hx-get="views/add-movie" hx-target="#main-view">
-                    <span>
-                        <span class="icon"><i class="fas fa-plus"></i></span>
-                        <span>Add Movie</span>
-                    </span>
-                </button>
-            </div>
-            <div class="navbar-item">
-                <button hx-get="views/data" hx-target="#main-view">
-                    <span>
-                        <span class="icon"><i class="fas fa-file-archive"></i></span>
-                        <span>Import/Export</span>
-                    </span>
-                </button>
-            </div>
-        </div>
-    </nav>
-    <section id="main-view" class="section">
-        <div class="hero is-align-items-center">
-            <header class="hero-head title is-1">Be Kind, Rewind!</header>
-            <section class="hero-body section">
-                <p class="block"><strong>Be Kind, Rewind!</strong> is a simple movie database application.</p>
-                <p class="block">It is written in <strong>Go</strong> and uses the <strong>htmx</strong> library for
-                    dynamic
-                    content loading.</p>
-                <p class="block">Select a view from the navigation bar above and <strong>enjoy!</strong></p>
-            </section>
-        </div>
-    </section>
-    <footer class="footer mt-auto" style="padding: 2rem 1rem 2rem;">
-        <div class="content has-text-centered">
-            <p>
-                <strong>Be Kind, Rewind!</strong> by <a href="https://github.com/markort147">Marco Romano</a>.
-            </p>
-            <p>
-                Built with <a href="https://golang.org">Go</a>, enhanced by <a href="https://htmx.org">HTMX</a>, and
-                styled with <a href="https://bulma.io">Bulma</a>.
-            </p>
-            <p>
-                The <a href="https://github.com/markort147/bekind">source code</a> is licensed <a
-                    href="https://opensource.org/license/mit">MIT</a>.
-            </p>
-        </div>
-    </footer>
-</div>
+    <div id="navbar" role="navigation" aria-label="main navigation">
+        <button title="Movies" hx-get="views/movies" hx-target="#main-view">
+            <i class="fas fa-list"></i>
+        </button>
+        <button title="People" hx-get="views/people" hx-target="#main-view">
+            <i class="fas fa-walking"></i>
+        </button>
+        <button title="Add Movie" hx-get="views/add-movie" hx-target="#main-view">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button title="Import/Export" hx-get="views/data" hx-target="#main-view">
+            <i class="fas fa-file-archive"></i>
+        </button>
+    </div>
+
+    <div id="main-view">
+        <h1>Be Kind, Rewind!</h1>
+        <p><strong>Be Kind, Rewind!</strong> is a simple movie database application.</p>
+        <p>It is written in <strong>Go</strong> and uses the <strong>htmx</strong> library for dynamic
+            content loading.</p>
+        <p>Select a view from the navigation bar above and <strong>enjoy!</strong></p>
+    </div>
+
+    <div id="footer">
+        <p><strong>Be Kind, Rewind!</strong> by <a href="https://github.com/markort147">Marco Romano</a>.
+            Built with <a href="https://golang.org">Go</a>, enhanced by <a href="https://htmx.org">HTMX</a>. The <a
+                href="https://github.com/markort147/bekind">source code</a> is licensed <a
+                href="https://opensource.org/license/mit">MIT</a>.</p>
+    </div>
 </body>
 
 <script>
@@ -86,7 +225,7 @@
 
         verifiedInputs.forEach(input => {
             // Initial check
-            if (input.classList.contains('is-danger')) {
+            if (input.classList.contains('invalid-input')) {
                 verifiedButtons.forEach(button => {
                     button.setAttribute('disabled', 'disabled');
                 });
@@ -96,7 +235,7 @@
             const observer = new MutationObserver(() => {
                 let anyDanger = false;
                 verifiedInputs.forEach(input => {
-                    if (input.classList.contains('is-danger')) {
+                    if (input.classList.contains('invalid-input')) {
                         anyDanger = true;
                     }
                 });
@@ -110,7 +249,7 @@
                 });
             });
 
-            observer.observe(input, {attributes: true, attributeFilter: ['class']});
+            observer.observe(input, { attributes: true, attributeFilter: ['class'] });
         });
     }
 
@@ -124,7 +263,7 @@
         if (xhr.getResponseHeader('Content-Disposition') === 'attachment' && typeof xhr.getResponseHeader('HX-Download') === 'string') {
             const filename = xhr.getResponseHeader('HX-Download');
             console.log(xhr.response);
-            const blob = new Blob([xhr.response], {type: 'text/csv'});
+            const blob = new Blob([xhr.response], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = filename;

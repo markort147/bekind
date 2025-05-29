@@ -1,15 +1,18 @@
 {{ define "add_movie" }}
-<div class="hero" id="add_movie_form_container">
-    <header class="hero-head title is-1 has-text-centered">Add a new movie</header>
-    <div class="hero-body">
-        <form hx-post="movie" hx-target="#main-view" style="display: flex; flex-direction: column;">
-            <div hx-post="validate/title" hx-trigger="load" hx-vals='{"title": ""}' hx-target="this" hx-swap="outerHTML"></div>
-            <div hx-post="validate/year" hx-trigger="load" hx-vals='{"year": ""}' hx-target="this" hx-swap="outerHTML"></div>
-            <div hx-post="validate/rate" hx-trigger="load" hx-vals='{"rate": ""}' hx-target="this" hx-swap="outerHTML"></div>
-            <button type="submit" class="button verified-button is-primary is-small" id="add_movie_button">
-                Submit
-            </button>
-        </form>
-    </div>
+<div id="add_movie_form_container">
+    <h1>Add a new movie</h1>
+
+    <form class="movie-form" hx-post="movie" hx-target="#main-view">
+        <div hx-post="validate/title" hx-trigger="load" hx-vals='{"title": ""}' hx-target="this" hx-swap="outerHTML">
+        </div>
+        <div hx-post="validate/year" hx-trigger="load" hx-vals='{"year": ""}' hx-target="this" hx-swap="outerHTML">
+        </div>
+        <div hx-post="validate/rate" hx-trigger="load" hx-vals='{"rate": ""}' hx-target="this" hx-swap="outerHTML">
+        </div>
+        <button type="submit" class="verified-button" id="add_movie_button">
+            Submit
+        </button>
+    </form>
+
 </div>
 {{ end }}
