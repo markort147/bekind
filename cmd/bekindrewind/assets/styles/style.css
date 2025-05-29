@@ -9,6 +9,7 @@
     --a-link: blue;
     --a-visited: purple;
     --a-active: red;
+    --invalid-input-bg-color: rgb(240, 155, 155);
 }
 
 .dark {
@@ -20,6 +21,7 @@
     --a-link: lightblue;
     --a-visited: lightpink;
     --a-active: lightgreen;
+    --invalid-input-bg-color: rgb(65, 30, 30);
 }
 
 body {
@@ -182,15 +184,31 @@ strong {
 
 /* ADD MOVIE VIEW */
 
-#add_movie_form_container .invalid-input-message {
-    color: brown;
-}
-
 #add_movie_form_container .movie-form {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: baseline;
+    height: 100%;
 }
 
 #add_movie_form_container .invalid-input {
-    border: 1px solid indianred;
+    background-color: var(--invalid-input-bg-color);
+}
+
+.field-with-icon {
+    margin: 3px;
+    border: 1px solid var(--field-border-color);
+}
+
+.input-field {
+    border: none;
+    background-color: inherit;
+    color: inherit;
+}
+
+#add_movie_button {
+    margin: 30px;
+    padding: 10px;
+    font-size: 25px;
 }
