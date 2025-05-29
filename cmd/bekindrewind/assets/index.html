@@ -7,7 +7,7 @@
         integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/assets/styles/style.css"/>
+    <link rel="stylesheet" href="/assets/styles/style.css" />
 </head>
 
 <body>
@@ -23,6 +23,9 @@
         </button>
         <button title="Import/Export" hx-get="views/data" hx-target="#main-view">
             <i class="fas fa-file-archive"></i>
+        </button>
+        <button id="switch-theme" title="Switch theme">
+            <i class="fas fa-adjust"></i>
         </button>
     </div>
 
@@ -96,6 +99,20 @@
             link.click();
             document.body.removeChild(link);
         }
+    });
+
+    // Toggle dark theme
+    const body = document.body;
+    const themeToggle = document.getElementById('switch-theme');
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark');
+    }
+
+    themeToggle.addEventListener('click', () => {
+        const isDark = body.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
 </script>
 

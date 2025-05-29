@@ -1,9 +1,30 @@
 /* GLOBALS */
 
-html {
-    color: white;
-    background-color: rgb(37, 37, 37);
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+:root {
+    --bg-color: white;
+    --color: black;
+    --hover-color: rgba(103, 44, 180, 0.815);
+    --bar-bg-color: rgb(224, 240, 238);
+    --field-border-color: black;
+    --a-link: blue;
+    --a-visited: purple;
+    --a-active: red;
+}
+
+.dark {
+    --bg-color: rgb(37, 37, 37);
+    --color: white;
+    --hover-color: rgba(255, 187, 0, 0.815);
+    --bar-bg-color: black;
+    --field-border-color: white;
+    --a-link: lightblue;
+    --a-visited: lightpink;
+    --a-active: lightgreen;
+}
+
+body {
+    color: var(--color);
+    background-color: var(--bg-color);
 }
 
 button {
@@ -15,7 +36,7 @@ button {
 }
 
 button:hover {
-    color: rgba(255, 187, 0, 0.815);
+    color: var(--hover-color);
     cursor: pointer;
 }
 
@@ -34,42 +55,43 @@ h1 {
 }
 
 a:link {
-    color: lightblue;
+    color: var(--a-link);
 }
 
 a:visited {
-    color: lightpink;
+    color: var(--a-visited);
 }
 
 a:active {
-    color: lightgreen;
+    color: var(--a-active);
 }
 
 strong {
-    color: rgba(255, 187, 0, 0.815);
+    color: var(--hover-color);
 }
 
 /* FOOTER */
 
 #footer {
-    background-color: black;
+    background-color: var(--bar-bg-color);
     position: fixed;
     bottom: 0;
     left: 0;
     text-align: center;
     width: 100%;
     font-size: 12px;
-    color: white;
+    color: var(--color);
 }
 
 /* NAVBAR */
 
 #navbar {
-    background-color: black;
+    background-color: var(--bar-bg-color);
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: center;
+    align-items: center;
     position: fixed;
     top: 0;
     left: 0;
@@ -95,8 +117,8 @@ strong {
     right: 0;
     padding-bottom: 15px;
 
-    background-color: rgb(37, 37, 37);
-    color: white;
+    background-color: var(--bg-color);
+    color: var(--color);
 }
 
 /* MOVIES VIEW */
@@ -117,7 +139,7 @@ strong {
 
 .movie-filter {
     margin: 3px;
-    border: 1px solid white;
+    border: 1px solid var(--field-border-color);
 }
 
 .movie-filter-input {
@@ -147,7 +169,7 @@ strong {
 }
 
 #movies-table thead th:hover {
-    color: rgba(255, 187, 0, 0.815);
+    color: var(--hover-color);
 }
 
 #movies-table tfoot th {
@@ -155,7 +177,7 @@ strong {
 }
 
 #movies-table tbody tr:hover {
-    background-color: black;
+    background-color: var(--bar-bg-color);
 }
 
 /* ADD MOVIE VIEW */
