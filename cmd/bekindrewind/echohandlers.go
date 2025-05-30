@@ -52,11 +52,13 @@ func deleteMovie(c echo.Context) error {
 func postMovie(c echo.Context) error {
 	rate, _ := strconv.Atoi(c.FormValue("rate"))
 	year, _ := strconv.Atoi(c.FormValue("year"))
+	title := c.FormValue("title")
 	data.addMovie(Movie{
-		Title: c.FormValue("title"),
+		Title: title,
 		Year:  year,
 		Rate:  rate,
 	})
+	moviesView.refresh()
 	return c.Render(200, "movie-list", moviesView)
 }
 

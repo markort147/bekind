@@ -37,10 +37,13 @@ func (md *MemoryData) movies() []*Movie {
 
 func (md *MemoryData) addMovie(m Movie) *Movie {
 	m.Id = md.nextMovieId
+
+	Logger.Debug(fmt.Sprintf("Saving movie with ID %d", m.Id))
 	md.Movies = append(md.Movies, &m)
 	md.MoviesMap[md.nextMovieId] = &m
 	md.nextMovieId++
 
+	Logger.Debug(fmt.Sprintf("Updating people for movie %d", m.Id))
 	for name := range m.People {
 		if _, exists := md.People[*name]; !exists {
 			md.People[*name] = struct{}{}
@@ -48,6 +51,9 @@ func (md *MemoryData) addMovie(m Movie) *Movie {
 			md.nextPersonId++
 		}
 	}
+
+	Logger.Debug(fmt.Sprintf("Saved movie: %+v", m))
+	Logger.Debug(fmt.Sprintf("Current movies: %+v", md.Movies))
 	return &m
 }
 

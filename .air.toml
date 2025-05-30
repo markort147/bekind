@@ -13,7 +13,7 @@ tmp_dir = "tmp"
   follow_symlink = false
   full_bin = "BEKIND_PORT=8080 BEKIND_LOG_LEVEL=debug BEKIND_LOG_OUTPUT=stdout BEKIND_MODE=memory BEKIND_DB_CONN_STRING=\"postgresql://peverel:peverel@localhost/bekind?sslmode=disable\" ./tmp/main"
   include_dir = []
-  include_ext = ["go", "tpl", "tmpl", "html", "css"]
+  include_ext = ["go", "tpl", "tmpl", "html", "css", "js"]
   include_file = []
   kill_delay = "2s"
   log = "build-errors.log"
