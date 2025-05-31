@@ -1,16 +1,5 @@
 {{ define "data" }}
 <div id="import-export-view">
-    <!-- <form hx-encoding='multipart/form-data' hx-post='/upload' hx-target="#main-view">
-        <label for="file-upload-input" id="file-upload-label" title="select file">
-            <i class="fas fa-folder-open"></i>
-        </label>
-        <input id='file-upload-input' type='file' name='file'>
-
-        <button type="submit" id="file-import-button" title="import file">
-            <i class="fas fa-file-import"></i>
-        </button>
-    </form> -->
-
     <form hx-encoding='multipart/form-data' hx-post='/upload' hx-target="#main-view">
         <button type="button" id="open-file-dialog" title="Select file">
             <i class="fas fa-folder-open"></i>

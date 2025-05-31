@@ -37,6 +37,11 @@ button {
     display: inline-block;
 }
 
+.hoverable:hover {
+    color: var(--hover-color);
+    cursor: pointer;
+}
+
 button:hover {
     color: var(--hover-color);
     cursor: pointer;
@@ -123,9 +128,9 @@ strong {
     color: var(--color);
 }
 
-/* MOVIES VIEW */
+/* TABLE VIEWS */
 
-#movies-table-container {
+.table-view {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -133,58 +138,53 @@ strong {
     align-items: center;
 }
 
-#movie-filters {
+.table-filters {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
 }
 
-.movie-filter {
+.table-filter {
     margin: 3px;
     border: 1px solid var(--field-border-color);
 }
 
-.movie-filter-input {
+.table-filter-input {
     border: none;
     background-color: inherit;
     color: inherit;
 }
 
-#movies-table {
+.table-container {
     overflow-y: auto;
     flex: 1;
     color: inherit;
 }
 
-#movies-table table {
+.table-container table {
     border-collapse: collapse;
     color: inherit;
 }
 
-#movies-table table td {
+.table-container table td {
     padding: 0 5px;
 }
 
-#movies-table thead th {
+.table-container thead th {
     border-bottom: 1px solid white;
-    cursor: pointer;
 }
 
-#movies-table thead th:hover {
-    color: var(--hover-color);
-}
-
-#movies-table tfoot th {
+.table-container tfoot th {
     border-top: 1px solid white;
 }
 
-#movies-table tbody tr:hover {
+.table-container tbody tr:hover {
     background-color: var(--bar-bg-color);
 }
 
-/* ADD MOVIE VIEW */
+/* ADD-EDIT MOVIE VIEW */
 
-#add_movie_form_container .movie-form {
+.movie-form-view .movie-form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -192,7 +192,7 @@ strong {
     height: 100%;
 }
 
-#add_movie_form_container .invalid-input {
+.movie-form-view .invalid-input {
     background-color: var(--invalid-input-bg-color);
 }
 
@@ -207,7 +207,7 @@ strong {
     color: inherit;
 }
 
-#add_movie_button {
+.movie-form-button {
     margin: 30px;
     padding: 10px;
     font-size: 25px;

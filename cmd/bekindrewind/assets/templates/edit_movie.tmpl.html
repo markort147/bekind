@@ -1,15 +1,29 @@
 {{ define "edit_movie" }}
-<div class="hero" id="edit_movie_form_container">
-    <header class="hero-head title is-1 has-text-centered">Edit {{.Title}}</header>
-    <div class="hero-body">
-        <form hx-put="movie/{{ .Id }}" hx-target="#main-view" style="display: flex; flex-direction: column;">
-            <div hx-post="validate/title" hx-trigger="load" hx-vals='{"title": "{{ .Title }}"}' hx-target="this" hx-swap="outerHTML"></div>
-            <div hx-post="validate/year" hx-trigger="load" hx-vals='{"year": "{{ .Year }}"}' hx-target="this" hx-swap="outerHTML"></div>
-            <div hx-post="validate/rate" hx-trigger="load" hx-vals='{"rate": "{{ .Rate }}"}' hx-target="this" hx-swap="outerHTML"></div>
-            <button type="submit" class="button verified-button is-primary is-small" id="add_movie_button">
-                Submit
-            </button>
-        </form>
-    </div>
+<div class="movie-form-view" id="edit-movie-view">
+    <h1>Edit {{.Title}}</h1>
+
+    <form hx-put="movie/{{ .Id }}" hx-target="#main-view" style="display: flex; flex-direction: column;">
+        <div class="field-with-icon">
+            <i class="fas fa-font"></i>
+            <div hx-post="validate/title" hx-trigger="load" hx-vals='{"title": "{{ .Title }}"}' hx-target="this"
+                hx-swap="outerHTML"></div>
+        </div>
+
+        <div class="field-with-icon">
+            <i class="fas fa-star-half-alt"></i>
+            <div hx-post="validate/rate" hx-trigger="load" hx-vals='{"rate": "{{ .Rate }}"}' hx-target="this"
+                hx-swap="outerHTML"></div>
+        </div>
+
+        <div class="field-with-icon">
+            <i class="fas fa-calendar-alt"></i>
+            <div hx-post="validate/year" hx-trigger="load" hx-vals='{"year": "{{ .Year }}"}' hx-target="this"
+                hx-swap="outerHTML"></div>
+        </div>
+        
+        <button type="submit" class="verified-button movie-form-button" title="Submit">
+            <i class="fas fa-check-circle"></i>
+        </button>
+    </form>
 </div>
 {{ end }}

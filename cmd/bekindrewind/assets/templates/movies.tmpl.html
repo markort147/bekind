@@ -1,40 +1,40 @@
 {{ define "movie-list" }}
-<div id="movies-table-container">
+<div id="movies-table-view" class="table-view">
     <h1>Movies</h1>
 
-    <form id="movie-filters" hx-put="views/movies/filter" hx-target="#movies-table-container" hx-trigger="input delay:150ms"
-        hx-swap="innerHTML">
-        <div class="movie-filter">
+    <form id="movies-table-filters" class="table-filters"
+    hx-put="views/movies/filter" hx-target="#movies-table-view" hx-trigger="input delay:150ms" hx-swap="innerHTML">
+        <div class="table-filter">
             <i class="fas fa-font"></i>
-            <input id="title-filter" class="movie-filter-input" type="text" name="title" placeholder="Title"
+            <input id="movie-title-filter" class="table-filter-input" type="text" name="title" placeholder="Title"
                 value="{{.FilterCriteria.Title}}">
         </div>
-        <div class="movie-filter">
+        <div class="table-filter">
             <i class="fas fa-star-half-alt"></i>
-            <input id="rate-filter" class="movie-filter-input" type="text" name="rate" placeholder="Rate, eg. 0-10"
+            <input id="movie-rate-filter" class="table-filter-input" type="text" name="rate" placeholder="Rate, eg. 0-10"
                 value="{{.FilterCriteria.Rate}}">
         </div>
-        <div class="movie-filter">
+        <div class="table-filter">
             <i class="fas fa-calendar-alt"></i>
-            <input id="year-filter" class="movie-filter-input" type="text" name="year" placeholder="Year, eg. 1950-2005"
+            <input id="movie-year-filter" class="table-filter-input" type="text" name="year" placeholder="Year, eg. 1950-2005"
                 value="{{.FilterCriteria.Year}}">
         </div>
     </form>
 
-    <div id="movies-table">
+    <div id="movies-table-container" class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th hx-put="views/movies/sort?by=id" hx-target="#movies-table-container">
+                    <th class="hoverable" hx-put="views/movies/sort?by=id" hx-target="#movies-table-view">
                         {{.Header.id}}
                     </th>
-                    <th hx-put="views/movies/sort?by=title" hx-target="#movies-table-container">
+                    <th class="hoverable" hx-put="views/movies/sort?by=title" hx-target="#movies-table-view">
                         {{.Header.title}}
                     </th>
-                    <th hx-put="views/movies/sort?by=year" hx-target="#movies-table-container">
+                    <th class="hoverable" hx-put="views/movies/sort?by=year" hx-target="#movies-table-view">
                         {{.Header.year}}
                     </th>
-                    <th hx-put="views/movies/sort?by=rate" hx-target="#movies-table-container">
+                    <th class="hoverable" hx-put="views/movies/sort?by=rate" hx-target="#movies-table-view">
                         {{.Header.rate}}
                     </th>
                     <th></th>
