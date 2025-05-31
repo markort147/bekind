@@ -1,19 +1,32 @@
 {{ define "data" }}
-<h1>Upload csv</h1>
+<div id="import-export-view">
+    <!-- <form hx-encoding='multipart/form-data' hx-post='/upload' hx-target="#main-view">
+        <label for="file-upload-input" id="file-upload-label" title="select file">
+            <i class="fas fa-folder-open"></i>
+        </label>
+        <input id='file-upload-input' type='file' name='file'>
 
-<form hx-encoding='multipart/form-data' hx-post='/upload'
-    _='on htmx:xhr:progress(loaded, total) set #upload-progress.value to (loaded/total)*100' hx-target="#main-view">
-    
-    <input type='file' name='file'>    
-    <br>
-    <br>
+        <button type="submit" id="file-import-button" title="import file">
+            <i class="fas fa-file-import"></i>
+        </button>
+    </form> -->
 
-    <button>Upload</button>
-    <br>
-    <progress id='upload-progress' value='0' max='100'></progress>
-</form>
+    <form hx-encoding='multipart/form-data' hx-post='/upload' hx-target="#main-view">
+        <button type="button" id="open-file-dialog" title="Select file">
+            <i class="fas fa-folder-open"></i>
+        </button>
 
-<h1>Download csv</h1>
+        <input id="file-upload-input" type="file" name="file">
 
-<button hx-get='/download' hx-swap="none">Download</button>
+        <span id="selected-file-name" class="file-name-placeholder">No file selected</span>
+
+        <button id="file-import-button" type="submit" title="Import file">
+            <i class="fas fa-file-import"></i>
+        </button>
+    </form>
+
+    <button id="file-export-button" title="Export file" hx-get='/download' hx-swap="none">
+        <i class="fas fa-file-export"></i>
+    </button>
+</div>
 {{ end }}

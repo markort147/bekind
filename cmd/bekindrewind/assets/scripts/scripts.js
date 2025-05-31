@@ -1,17 +1,19 @@
-// Function to handle the class change on elements with class "verified-input"
+// Initialize the class change handler on DOMContentLoaded and htmx:afterSwap
+document.addEventListener('DOMContentLoaded', handleVerifiedInputClassChange);
+document.body.addEventListener('htmx:afterSwap', handleVerifiedInputClassChange);
+document.body.addEventListener('htmx:afterSwap', handleFileImport);
+
+// Invalid input and buttons
 function handleVerifiedInputClassChange() {
     const verifiedInputs = document.querySelectorAll('.verified-input');
     const verifiedButtons = document.querySelectorAll('.verified-button');
 
     verifiedInputs.forEach(input => {
-        // Initial check
         if (input.classList.contains('invalid-input')) {
             verifiedButtons.forEach(button => {
                 button.setAttribute('disabled', 'disabled');
             });
         }
-
-        // Observe class changes
         const observer = new MutationObserver(() => {
             let anyDanger = false;
             verifiedInputs.forEach(input => {
@@ -33,9 +35,38 @@ function handleVerifiedInputClassChange() {
     });
 }
 
-// Initialize the class change handler on DOMContentLoaded and htmx:afterSwap
-document.addEventListener('DOMContentLoaded', handleVerifiedInputClassChange);
-document.body.addEventListener('htmx:afterSwap', handleVerifiedInputClassChange);
+// Toggle dark theme
+const body = document.body;
+const themeToggle = document.getElementById('switch-theme');
+
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+    body.classList.add('dark');
+}
+
+themeToggle.addEventListener('click', () => {
+    const isDark = body.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
+
+//File import-export
+function handleFileImport() {
+    const fileInput = document.getElementById('file-upload-input');
+    const openButton = document.getElementById('open-file-dialog');
+    const fileNameDisplay = document.getElementById('selected-file-name');
+
+    openButton.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = fileInput.files[0].name;
+        } else {
+            fileNameDisplay.textContent = 'No file selected';
+        }
+    });
+}
 
 // Handle file download for CSV files
 document.addEventListener('htmx:afterRequest', function (evt) {
@@ -51,18 +82,4 @@ document.addEventListener('htmx:afterRequest', function (evt) {
         link.click();
         document.body.removeChild(link);
     }
-});
-
-// Toggle dark theme
-const body = document.body;
-const themeToggle = document.getElementById('switch-theme');
-
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme === 'dark') {
-    body.classList.add('dark');
-}
-
-themeToggle.addEventListener('click', () => {
-    const isDark = body.classList.toggle('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
